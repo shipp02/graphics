@@ -1,0 +1,9 @@
+build/**
+.clangd/**
+.metadata/**
+helper/CMakeLists.txt
+helper/mesh.h
+helper/model.h
+.DS_STORE
+.project
+

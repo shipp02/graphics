@@ -1,0 +1,10 @@
+{
+    "C_Cpp.default.configurationProvider": "vector-of-bool.cmake-tools",
+    "files.associations": {
+        "*.java": "java",
+        "*.js": "javascript",
+        "*.ts": "TypeScript",
+        "iosfwd": "cpp",
+        "vector": "cpp"
+    }
+}
