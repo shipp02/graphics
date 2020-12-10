@@ -22,6 +22,8 @@ void key_call(GLFWwindow* window, int character, int b, int c, int d){
 }
 int SCR_WIDTH = 800;
 int SCR_HEIGHT = 600;
+using std::vector;
+using gl::point_type;
 
 #define FLOAT_SIZE(x) x*sizeof(float)
 
@@ -35,12 +37,25 @@ int main(){
 
     gl::program p1("shaders/model.1.vert","shaders/model.1.frag");
     p1.use();
+    gl::printErrors("before loop 4");
+
 
     GLuint vao, vbo;
+    gl::printErrors("before loop 3");
     gl::genAndBind(vao, glGenVertexArrays, glBindVertexArray);
-    using gl::point_type;
+    auto p_Pos = p1.attribBindPoint("Pos", vector<point_type>{
+        point_type::X,
+        point_type::Y,
+        point_type::Z
+    });
     gl::printErrors("before loop 2");
-    auto b = gl::buffer(glGenBuffers, gl::arrayBufferBind, vertices::cube, std::vector<gl::point_type> {
+    auto p_fColor = p1.attribBindPoint("fColor", vector<point_type> {
+        point_type::Red,
+        point_type::Green,
+        point_type::Blue
+    });
+    auto b = std::make_shared<gl::buffer>(glGenBuffers, gl::arrayBufferBind, 
+            vertices::cube, vector<gl::point_type> {
         point_type::X,
         point_type::Y,
         point_type::Z,
@@ -49,20 +64,11 @@ int main(){
         point_type::Blue,
         point_type::U,
         point_type::V,
-    });
-    auto po = p1.attribBindPoint("Pos", std::vector<point_type>{
-        point_type::X,
-        point_type::Y,
-        point_type::Z
-    });
-    b.with_bind_point(po);
-
-    auto p_fColor = p1.attribBindPoint("fColor",std::vector<point_type> {
-        point_type::X,
-        point_type::Green,
-        point_type::Blue
-    });
-    b.with_bind_point(p_fColor);
+    })
+    ->with_bind_point(p_Pos)
+    ->with_bind_point(p_fColor);
+    cout<<"Not yet.."<<std::endl;
+//    b->with_bind_point(p_fColor);
 
     auto modelMatPos = p1.matLocation("model");
     auto model = glm::mat4(1.0f);
@@ -83,7 +89,7 @@ int main(){
     gl::printErrors("before loop");
 
     while(!glfwWindowShouldClose(window)){
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         p1.use();
         glBindVertexArray(vao);

@@ -69,7 +69,8 @@ private:
 
 #define FLOAT_SIZE(x) x*sizeof(float)
 
-class buffer : std::enable_shared_from_this<buffer>
+using std::shared_ptr;
+class buffer : public std::enable_shared_from_this<buffer>
 {
 public:
     buffer(generator &g, binder &b)
@@ -87,13 +88,14 @@ public:
         save_to_gpu();
     };
 
+
     ~buffer()
     {
         // glDeleteBuffers(1, &_buffer);
         std::cout<<"Deleted"<<std::endl;
     }
 
-    std::shared_ptr<buffer> set_data(vector<float> &_points, vector<point_type> &_types)
+    shared_ptr<buffer> set_data(vector<float> &_points, vector<point_type> &_types)
     {
         points = _points;
         types = _types;
@@ -104,7 +106,7 @@ public:
     // TODO: THis will bind the first few points on the bind_point with
     // with those on buffer provided their types match
     // Add check to prevent assignment of more than given number of points
-    void with_bind_point(bind_point point)
+    shared_ptr<buffer> with_bind_point(bind_point point)
     {
         using std::cout;
         auto s = point.points.size();
@@ -122,7 +124,8 @@ public:
                 FLOAT_SIZE(types.size()),
                 (void*) (FLOAT_SIZE(assigned)));
         assigned += s;
-        // return shared_from_this();
+        cout<<"Not yet."<<std::endl;
+        return shared_from_this();
     }
 
 private:
