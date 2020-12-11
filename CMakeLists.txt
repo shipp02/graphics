@@ -9,6 +9,7 @@ include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
 include_directories(helper/)
+file(COPY models DESTINATION ${CMAKE_BINARY_DIR})
 add_executable(conan1 one.cpp)
 target_link_libraries(conan1 ${CONAN_LIBS})
 

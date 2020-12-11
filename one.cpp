@@ -12,6 +12,8 @@
 #include "shader.cpp"
 // #include "buffer.cpp"
 #include "context.cpp"
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
 // Too may errors not building
 
@@ -54,6 +56,12 @@ int main(){
         point_type::Green,
         point_type::Blue
     });
+
+    auto p_fTexCoords = p1.attribBindPoint("fTexCoords", vector<point_type> {
+        point_type::U,
+        point_type::V
+    });
+
     auto b = std::make_shared<gl::buffer>(glGenBuffers, gl::arrayBufferBind, 
             vertices::cube, vector<gl::point_type> {
         point_type::X,
@@ -66,25 +74,41 @@ int main(){
         point_type::V,
     })
     ->with_bind_point(p_Pos)
-    ->with_bind_point(p_fColor);
+    ->with_bind_point(p_fColor)
+    ->with_bind_point(p_fTexCoords);
     cout<<"Not yet.."<<std::endl;
 //    b->with_bind_point(p_fColor);
 
     auto modelMatPos = p1.matLocation("model");
     auto model = glm::mat4(1.0f);
-    model = glm::rotate(model, glm::radians(25.0f), glm::vec3(0.0f,1.0f,0.0f));
+//    model = glm::rotate(model, glm::radians(25.0f), glm::vec3(0.0f,1.0f,0.0f));
 
     auto viewMatPos = p1.matLocation("view");
     auto view = glm::lookAt(
-        glm::vec3(0.0f, 0.0f, 1.0f),
-        glm::vec3(0.3f, 0.3f, 0.0f),
+        glm::vec3(0.0f, 0.0f, 3.0f),
+        glm::vec3(0.0f, 0.0f, 0.0f),
         glm::vec3(0.0f, 1.0f, 0.0f)
     );
     glUniformMatrix4fv(viewMatPos, 1, GL_FALSE, glm::value_ptr(view));
 
     auto projMatPos = p1.matLocation("projection");
-    glm::mat4 proj = glm::perspective(glm::radians(75.0f), 800.0f / 600.0f, 1.0f, 10.0f);
+    glm::mat4 proj = glm::perspective(glm::radians(75.0f), 800.0f / 600.0f, 0.1f, 10.0f);
     glUniformMatrix4fv(projMatPos, 1, GL_FALSE, glm::value_ptr(proj));
+
+    GLuint tex;
+    glGenTextures(1, &tex);
+    glBindTexture(GL_TEXTURE_2D, tex);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);   
+
+    GLint width, height, nrChannels;
+    unsigned char* data = stbi_load("models/8_Bit_Mario.png", &width, &height, &nrChannels, 0);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    stbi_image_free(data);
+
 
     gl::printErrors("before loop");
 
@@ -95,7 +119,7 @@ int main(){
         glBindVertexArray(vao);
 
         glDrawArrays(GL_TRIANGLES, 0, 36);
-        model = glm::rotate(model, glm::radians(10.0f), glm::vec3(0.0f,0.0f,1.0f));
+//        model = glm::rotate(model, glm::radians(10.0f), glm::vec3(0.0f,0.0f,1.0f));
         glUniformMatrix4fv(modelMatPos, 1, GL_FALSE, glm::value_ptr(model));
 
         glfwSwapBuffers(window);

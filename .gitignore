@@ -6,4 +6,4 @@ helper/mesh.h
 helper/model.h
 .DS_STORE
 .project
-
+*.png

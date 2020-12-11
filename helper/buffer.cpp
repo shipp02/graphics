@@ -58,6 +58,8 @@ public:
         }
     }
 
+    typedef std::shared_ptr<bind_point> pointer;
+
     void bind_vertex(buffer &b) {
     }
     vector<point_type> points;
@@ -91,7 +93,7 @@ public:
 
     ~buffer()
     {
-        // glDeleteBuffers(1, &_buffer);
+        glDeleteBuffers(1, &_buffer);
         std::cout<<"Deleted"<<std::endl;
     }
 
@@ -103,6 +105,8 @@ public:
         return shared_from_this();
     }
 
+    class points_do_not_match {
+    };
     // TODO: THis will bind the first few points on the bind_point with
     // with those on buffer provided their types match
     // Add check to prevent assignment of more than given number of points
@@ -115,7 +119,7 @@ public:
             match =  match && (point.points[i] == types[assigned+i]);
         }
         if(!match) {
-            throw  "Point do not match";
+            throw  points_do_not_match();
             // return shared_from_this();
         }
         glVertexAttribPointer(point.location, 
@@ -124,9 +128,9 @@ public:
                 FLOAT_SIZE(types.size()),
                 (void*) (FLOAT_SIZE(assigned)));
         assigned += s;
-        cout<<"Not yet."<<std::endl;
         return shared_from_this();
     }
+
 
 private:
     GLuint _buffer;
