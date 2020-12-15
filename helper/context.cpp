@@ -8,7 +8,7 @@
 
 
 namespace gl {
-GLFWwindow* mkWindowContextCurrent(uint SCR_WIDTH, uint SCR_HEIGHT) {
+GLFWwindow* mkWindowContextCurrent(unsigned int SCR_WIDTH, unsigned int SCR_HEIGHT) {
 
 
     if (glfwInit() != GL_TRUE) {
