@@ -8,8 +8,9 @@ add_definitions("-std=c++11")
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
-include_directories(helper/)
+include_directories(helper)
+set(SRC one.cpp ${SRC})
 file(COPY models DESTINATION ${CMAKE_BINARY_DIR})
-add_executable(conan1 one.cpp)
+add_executable(conan1 ${SRC})
 target_link_libraries(conan1 ${CONAN_LIBS})
 
