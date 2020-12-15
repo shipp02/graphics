@@ -12,8 +12,6 @@
 #include "shader.cpp"
 // #include "buffer.cpp"
 #include "context.cpp"
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
 
 // Too may errors not building
 
@@ -77,7 +75,6 @@ int main(){
     ->with_bind_point(p_fColor)
     ->with_bind_point(p_fTexCoords);
     cout<<"Not yet.."<<std::endl;
-//    b->with_bind_point(p_fColor);
 
     auto modelMatPos = p1.matLocation("model");
     auto model = glm::mat4(1.0f);
@@ -95,19 +92,7 @@ int main(){
     glm::mat4 proj = glm::perspective(glm::radians(75.0f), 800.0f / 600.0f, 0.1f, 10.0f);
     glUniformMatrix4fv(projMatPos, 1, GL_FALSE, glm::value_ptr(proj));
 
-    GLuint tex;
-    glGenTextures(1, &tex);
-    glBindTexture(GL_TEXTURE_2D, tex);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);   
-
-    GLint width, height, nrChannels;
-    unsigned char* data = stbi_load("models/8_Bit_Mario.png", &width, &height, &nrChannels, 0);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
-    glGenerateMipmap(GL_TEXTURE_2D);
-    stbi_image_free(data);
+    gl::texture("models/8_Bit_Mario.png");
 
 
     gl::printErrors("before loop");

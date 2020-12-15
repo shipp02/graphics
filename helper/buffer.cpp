@@ -2,9 +2,12 @@
 #define HELPER_BUFFER
 
 #include <GL/glew.h>
+#include <memory>
 #include <vector>
 #include <string>
 #include <iostream>
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
 
 namespace gl
@@ -27,6 +30,10 @@ void arrayBufferBind(GLuint arr)
     glBindBuffer(GL_ARRAY_BUFFER, arr);
 }
 
+void texture2dBind (GLuint arr) 
+{
+    glBindBuffer(GL_TEXTURE_2D, arr);
+}
 
 enum point_type
 {
@@ -50,7 +57,7 @@ class bind_point
 {
 public:
     bind_point(string _name, GLuint _location, vector<point_type> ps) : 
-        name(_name), location(_location), points(ps)
+          points(ps), location(_location), name(_name)
     {
         if (location < 0)
         {
@@ -59,6 +66,14 @@ public:
     }
 
     typedef std::shared_ptr<bind_point> pointer;
+
+    static pointer bind_XYZ(string _name, GLuint _location) {
+        return std::make_shared<bind_point>(_name, _location, vector<point_type>{
+                X,
+                Y,
+                Z
+        });
+    }
 
     void bind_vertex(buffer &b) {
     }
@@ -141,6 +156,50 @@ private:
     void save_to_gpu() {
         glBufferData(GL_ARRAY_BUFFER, points.size() * sizeof(float), &points[0], GL_STATIC_DRAW);
     }
+};
+
+struct TexParameters {
+    GLenum wrap_s;
+    GLenum wrap_t;
+    GLenum min_filter;
+    GLenum max_filter;
+};
+
+auto DefaultTexture = TexParameters {
+    GL_REPEAT,
+    GL_REPEAT,
+    GL_LINEAR,
+    GL_LINEAR
+};
+
+class texture : public std::enable_shared_from_this<texture> {
+public:
+    using pointer = std::shared_ptr<texture>;
+
+    texture(string path, 
+            GLenum activeTexture = GL_TEXTURE0,
+            TexParameters params = DefaultTexture) {
+        glActiveTexture(activeTexture);
+        gl::genAndBind(_texture, glGenTextures, texture2dBind);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, params.wrap_s);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, params.wrap_t);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, params.max_filter);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, params.min_filter);
+        GLint width, height, nrChannels;
+        unsigned char* data = stbi_load(path.c_str(), &width, &height, &nrChannels, 0);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+        stbi_image_free(data);
+    }
+
+
+    ~texture() {
+        glDeleteTextures(1, &_texture);
+    }
+
+private:
+    GLuint _texture;
+    vector<GLbyte> data;
 };
 
 }; // namespace gl
