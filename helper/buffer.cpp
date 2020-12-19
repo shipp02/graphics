@@ -100,7 +100,7 @@ public:
     : points(_points), types(_types)
     {
         genAndBind(_buffer, g, b);
-        std::cout<<_buffer<<std::endl;
+        /* std::cout<<_buffer<<std::endl; */
         assigned = 0;
         save_to_gpu();
     };
