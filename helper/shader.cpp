@@ -1,6 +1,7 @@
 #ifndef HELPER_SHADER
 #define HELPER_SHADER
 
+#include <memory>
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
@@ -108,7 +109,7 @@ private:
     GLenum type;
 };
 
-class program : std::enable_shared_from_this<program>
+class program : public std::enable_shared_from_this<program>
 {
 public:
     program(string vertexSource, string fragmentSource) : 
@@ -146,8 +147,11 @@ public:
         return pos;
     }
 
-    bind_point attribBindPoint(string attr, vector<point_type> ps) {
-        return bind_point(attr, attribLocation(attr), ps);
+    bind_point::ptr attribBindPoint(string attr, vector<point_type> ps) 
+    {
+        auto ptr = std::make_shared<bind_point>(attr, attribLocation(attr), ps);
+        binds.insert({attr, ptr});
+        return ptr;
     }
 
     GLint matLocation(string name)
@@ -166,14 +170,13 @@ public:
     {
         glDeleteProgram(_program);
     }
-
+    std::map<std::string, bind_point::ptr> binds;
 private:
     GLuint _program;
     shader vShader;
     shader fShader;
     int error;
     string err_describe;
-    // TODO: remove circular import problem of bind_point due to buffer .cpp
     // map<string, bind_point> bps;
 };
 

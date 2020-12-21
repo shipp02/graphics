@@ -65,9 +65,9 @@ public:
         }
     }
 
-    typedef std::shared_ptr<bind_point> pointer;
+    using ptr = std::shared_ptr<bind_point>;
 
-    static pointer bind_XYZ(string _name, GLuint _location) {
+    static ptr bind_XYZ(string _name, GLuint _location) {
         return std::make_shared<bind_point>(_name, _location, vector<point_type>{
                 X,
                 Y,
@@ -125,19 +125,19 @@ public:
     // TODO: THis will bind the first few points on the bind_point with
     // with those on buffer provided their types match
     // Add check to prevent assignment of more than given number of points
-    shared_ptr<buffer> with_bind_point(bind_point point)
+    shared_ptr<buffer> with_bind_point(bind_point::ptr point)
     {
         using std::cout;
-        auto s = point.points.size();
+        auto s = point->points.size();
         bool match  = true;
         for(int i = 0; i<s; i++) {
-            match =  match && (point.points[i] == types[assigned+i]);
+            match =  match && (point->points[i] == types[assigned+i]);
         }
         if(!match) {
             throw  points_do_not_match();
             // return shared_from_this();
         }
-        glVertexAttribPointer(point.location, 
+        glVertexAttribPointer(point->location, 
                 s, 
                 GL_FLOAT, GL_FALSE, 
                 FLOAT_SIZE(types.size()),

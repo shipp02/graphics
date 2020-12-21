@@ -1,41 +1,26 @@
 #include <stdio.h>
-#include <iostream>
 #include <math.h>
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
+#include <iostream>
+#include <map>
 #include <memory>
 #include <ostream>
-#include <stdio.h>
 #include <string>
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+#include <glm/fwd.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/detail/qualifier.hpp>
+#include <glm/ext/matrix_transform.hpp>
 #include "buffer.cpp"
-#include "glm/detail/qualifier.hpp"
-#include "glm/ext/matrix_transform.hpp"
-#include "glm/fwd.hpp"
 #include "shader.cpp"
-// #include "buffer.cpp"
 #include "context.cpp"
-
-struct position {
-    int x;
-    int y;
-    glm::mat4 player_pos;
-};
-
-void move_ver(position &pos, int dir = 1) {
-    if(dir<0) {
-        pos.y--;
-        pos.player_pos = glm::translate(pos.player_pos, glm::vec3(0.0f, -1.2f, 0.0f));
-    } else {
-        pos.y++;
-        pos.player_pos = glm::translate(pos.player_pos, -glm::vec3(0.0f, -1.2f, 0.0f));
-    }
-}
+#include "control.cpp"
 
 /* position player_pos; */
 glm::mat4 player_pos;
+control player_c(10, 10, 0, 0 , , -glm::vec3(0.0f, -1.2f, 0.0f), glm::vec3(1.2f, 0.0f, 0.0f));
 
 void key_call(GLFWwindow* window, int character, int b, int action, int d){
     using namespace std;
@@ -48,7 +33,7 @@ void key_call(GLFWwindow* window, int character, int b, int action, int d){
         glfwSetWindowShouldClose(window, GLFW_TRUE);
     } 
     else if(character == GLFW_KEY_UP) {
-        player_pos = glm::translate(player_pos,-glm::vec3(0.0f, -1.2f, 0.0f));
+        player_pos = glm::translate(player_pos, -glm::vec3(0.0f, -1.2f, 0.0f));
     }
     else if(character == GLFW_KEY_DOWN) {
         player_pos = glm::translate(player_pos,glm::vec3(0.0f, -1.2f, 0.0f));
@@ -65,12 +50,10 @@ int SCR_HEIGHT = 600;
 using std::vector;
 using gl::point_type;
 
-#define FLOAT_SIZE(x) x*sizeof(float)
 
 struct board {
     std::shared_ptr<gl::program> p;
     std::shared_ptr<gl::buffer> b;
-    vector<gl::bind_point> binds;
     const glm::mat4 base;
     const glm::vec3 hTrans;
     const glm::vec3 vTrans;
@@ -134,11 +117,6 @@ board createAndBindBoard() {
     return board {
         p1,
         b,
-        vector<gl::bind_point> {
-            p_Pos,
-            p_fColor,
-            p_fTexCoords
-        },
         baseModel,
         glm::vec3(1.2f, 0.0f, 0.0f),
         glm::vec3(0.0f, -1.2f, 0.0f),
@@ -214,8 +192,8 @@ int main(){
     ->with_bind_point(player_fColor)
     ->with_bind_point(player_fTexCoords);
 
-    auto cfg  = gl::read_config("player.cfg");
-    cout << cfg.far << " " << cfg.near << " " << cfg.fov << std::endl;
+    /* auto cfg  = gl::read_config("player.cfg"); */
+    /* cout << cfg.far << " " << cfg.near << " " << cfg.fov << std::endl; */
 
     auto viewMatPos = player.matLocation("view");
     auto view = glm::lookAt(
