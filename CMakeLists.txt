@@ -3,7 +3,7 @@ project(opengl-with-conan)
 set(CMAKE_EXPORT_COMPILE_COMMANDS on)
 set(CMAKE_CXX_COMPILER "/usr/local/Cellar/llvm/10.0.1_2/bin/clang++")
 
-add_definitions("-std=c++11")
+add_definitions("-std=c++17")
 
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
