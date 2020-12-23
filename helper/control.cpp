@@ -3,6 +3,7 @@
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/fwd.hpp"
 #include "glm/glm.hpp"
+#include <iostream>
 
 class control {
 public:
@@ -12,15 +13,26 @@ public:
   control(int _max_x, int _max_y, int _min_x, int _min_y, glm::mat4 _zero,
           glm::vec3 _move_x, glm::vec3 _move_y)
       : max_x(_max_x), max_y(_max_y), min_x(_min_x), min_y(_min_y),
-        move_x(_move_x), move_y(_move_x), zero(_zero) {
+        move_x(_move_x), move_y(_move_y), zero(_zero) {
     x = 0;
     y = 0;
+    pos = _zero;
   }
+
+  void set_zero(int _x, int _y) {
+      x = _x;
+      y = _y;
+  }
+
   void move_ver(float d_y) {
     if ((y + d_y > max_y) || (y + d_y < min_y)) {
       throw moved_out_of_bounds();
     }
     y += d_y;
+    using std::cout;
+    using std::endl;
+
+    cout<<"x: "<<x<<"y: "<<y<<endl;
     pos = glm::translate(zero, y * move_y);
     pos = glm::translate(pos, x * move_x);
   }
@@ -29,6 +41,10 @@ public:
     if ((x + d_x > max_x) || (x + d_x < min_x)) {
       throw moved_out_of_bounds();
     }
+    using std::cout;
+    using std::endl;
+
+    cout<<"x: "<<x<<"y: "<<y<<endl;
     x += d_x;
     pos = glm::translate(zero, y * move_y);
     pos = glm::translate(pos, x * move_x);

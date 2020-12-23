@@ -18,10 +18,7 @@
 #include <stdio.h>
 #include <string>
 
-/* position player_pos; */
-glm::mat4 player_pos;
-control player_c(10, 10, 0, 0, , -glm::vec3(0.0f, -1.2f, 0.0f),
-                 glm::vec3(1.2f, 0.0f, 0.0f));
+std::unique_ptr<control> player_c = nullptr;
 
 void key_call(GLFWwindow *window, int character, int b, int action, int d) {
   using namespace std;
@@ -33,13 +30,17 @@ void key_call(GLFWwindow *window, int character, int b, int action, int d) {
   if (character == GLFW_KEY_Q) {
     glfwSetWindowShouldClose(window, GLFW_TRUE);
   } else if (character == GLFW_KEY_UP) {
-    player_pos = glm::translate(player_pos, -glm::vec3(0.0f, -1.2f, 0.0f));
+      /* cout<<"UP"<<endl; */
+    player_c->move_ver(1.0f);
   } else if (character == GLFW_KEY_DOWN) {
-    player_pos = glm::translate(player_pos, glm::vec3(0.0f, -1.2f, 0.0f));
+      /* cout<<"DOWN"<<endl; */
+    player_c->move_ver(-1.0f);
   } else if (character == GLFW_KEY_RIGHT) {
-    player_pos = glm::translate(player_pos, +glm::vec3(1.2f, 0.0f, 0.0f));
+      /* cout<<"RIGHT"<<endl; */
+    player_c->move_hor(1.0f);
   } else if (character == GLFW_KEY_LEFT) {
-    player_pos = glm::translate(player_pos, -glm::vec3(1.2f, 0.0f, 0.0f));
+      /* cout<<"LEFT"<<endl; */
+    player_c->move_hor(-1.0f);
   }
 }
 int SCR_WIDTH = 800;
@@ -145,20 +146,26 @@ int main() {
   glfwSetKeyCallback(window, key_call);
 
   auto brd = createAndBindBoard();
-  player_pos = brd.base;
+
+  player_c = std::make_unique<control>(9, 0, 0, -9, brd.base, glm::vec3(1.2f, 0.0f, 0.0f), -glm::vec3(0.0f, -1.2f, 0.0f));
+
 
   gl::program player("shaders/model.1.vert", "shaders/model.1.frag");
   player.use();
   GLuint vao;
   gl::genAndBind(vao, glGenVertexArrays, glBindVertexArray);
+
   auto player_Pos = player.attribBindPoint(
       "Pos", vector<point_type>{point_type::X, point_type::Y, point_type::Z});
   gl::printErrors("before loop 2");
+
   auto player_fColor = player.attribBindPoint(
       "fColor",
       vector<point_type>{point_type::Red, point_type::Green, point_type::Blue});
+
   auto player_fTexCoords = player.attribBindPoint(
       "fTexCoords", vector<point_type>{point_type::U, point_type::V});
+
   auto b = std::make_shared<gl::buffer>(glGenBuffers, gl::arrayBufferBind,
                                         vertices::square,
                                         vector<gl::point_type>{
@@ -190,8 +197,7 @@ int main() {
   glUniformMatrix4fv(projMatPos, 1, GL_FALSE, glm::value_ptr(proj));
 
   auto modelMatPos = player.matLocation("model");
-  /* auto m = glm::mat4(1.0f); */
-  glUniformMatrix4fv(modelMatPos, 1, GL_FALSE, glm::value_ptr(player_pos));
+  glUniformMatrix4fv(modelMatPos, 1, GL_FALSE, glm::value_ptr(player_c->pos));
   gl::texture("models/8_Bit_Mario.png");
 
   gl::printErrors("before loop");
@@ -201,6 +207,7 @@ int main() {
 
   gl::printErrors("before loop.");
   player.use();
+  glUniformMatrix4fv(modelMatPos, 1, GL_FALSE, glm::value_ptr(player_c->pos));
   glBindVertexArray(vao);
 
   gl::printErrors("before loop..");
@@ -212,8 +219,8 @@ int main() {
     gl::backgroundColor(0.807, 0.823, 0.909, 1.0);
     drawBoard(brd);
     player.use();
-    glUniformMatrix4fv(modelMatPos, 1, GL_FALSE, glm::value_ptr(player_pos));
     glBindVertexArray(vao);
+    glUniformMatrix4fv(modelMatPos, 1, GL_FALSE, glm::value_ptr(player_c->pos));
     glDrawArrays(GL_TRIANGLES, 0, 6);
 
     glfwSwapBuffers(window);
