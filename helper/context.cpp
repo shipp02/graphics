@@ -43,6 +43,59 @@ void func_key_call (GLFWwindow* window, std::function<void(GLFWwindow*, int, int
   glfwSetKeyCallback(window, *key_func.target<GLFWkeyfun>());
 }
 
+using std::ifstream;
+using std::string;
+using std::stringstream;
+
+stringstream config_reader(const char *file) {
+  ifstream infile;
+  infile.open(file, std::ios::in);
+  if (!infile.is_open()) {
+    printf("Failed to read shader\n");
+    printf("%s\n", file);
+  }
+  std::stringstream buffer;
+  buffer << infile.rdbuf();
+  infile.close();
+  return buffer;
 }
+
+struct config {
+  glm::vec3 eye;
+  glm::vec3 center;
+  glm::vec3 up;
+  GLfloat near;
+  GLfloat far;
+  GLfloat fov;
 };
+
+glm::vec3 read_vec(ifstream &infile) {
+  string l1, l2, l3;
+  getline(infile, l1);
+  getline(infile, l2);
+  getline(infile, l3);
+  return glm::vec3(std::atof(l1.c_str()), std::atof(l2.c_str()),
+                   std::atof(l3.c_str()));
+}
+
+GLfloat read_float(ifstream &infile) {
+  string l1;
+  getline(infile, l1);
+  return std::atof(l1.c_str());
+}
+
+config read_config(const char *file) {
+  ifstream infile;
+  infile.open(file, std::ios::in);
+  if (!infile.is_open()) {
+    printf("Failed to read shader\n");
+    printf("%s\n", file);
+  }
+  auto eye = read_vec(infile);
+  auto center = read_vec(infile);
+  auto up = read_vec(infile);
+  return config{read_vec(infile),   read_vec(infile),   read_vec(infile),
+                read_float(infile), read_float(infile), read_float(infile)};
+}
+}; // namespace gl
 #endif
