@@ -1,5 +1,4 @@
-set(SRC buffer.cpp 
-    shader.cpp 
-    context.cpp 
+set(SRC buffer.cpp
+    context.cpp
     ${SRC})
 

@@ -1,7 +1,9 @@
-#include "buffer.cpp"
+#include "buffer.h"
 #include "context.cpp"
-#include "control.cpp"
-#include "shader.cpp"
+#include "control.h"
+#include "program.h"
+#include "texture.h"
+#include "utils.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/gtc/matrix_transform.hpp>
@@ -72,7 +74,7 @@ board createAndBindBoard() {
   auto p_fTexCoords = p1->attribBindPoint(
       "fTexCoords", vector<point_type>{point_type::U, point_type::V});
 
-  auto b = std::make_shared<gl::buffer>(glGenBuffers, gl::arrayBufferBind,
+  auto b = std::make_shared<gl::buffer>(
                                         vertices::square,
                                         vector<gl::point_type>{
                                             point_type::X,
@@ -132,8 +134,8 @@ void drawBoard(const board &brd) {
 }
 
 void move_err(int x, std::string y) {
-    cout<<"error: "<<x<<std::endl;
-    cout<<y<<std::endl;
+    std::cout<<"error: "<<x<<std::endl;
+    std::cout<<y<<std::endl;
 }
 int main() {
 
@@ -162,7 +164,7 @@ int main() {
   auto player_fTexCoords = player.attribBindPoint(
       "fTexCoords", vector<point_type>{point_type::U, point_type::V});
 
-  auto b = std::make_shared<gl::buffer>(glGenBuffers, gl::arrayBufferBind,
+  auto b = std::make_shared<gl::buffer>(
                                         vertices::square,
                                         vector<gl::point_type>{
                                             point_type::X,

@@ -9,7 +9,7 @@ include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
 include_directories(helper)
-set(SRC one.cpp ${SRC})
+set(SRC one.cpp ${SRC} helper/program.cpp helper/program.h helper/shader.h helper/shader.cpp helper/buffer.h helper/buffer.cpp helper/bind_point.cpp helper/bind_point.h helper/texture.cpp helper/texture.h helper/utils.h helper/utils.cpp)
 file(COPY models DESTINATION ${CMAKE_BINARY_DIR})
 add_executable(conan1 ${SRC})
 target_link_libraries(conan1 ${CONAN_LIBS})
