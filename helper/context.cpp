@@ -1,18 +1,14 @@
 #ifndef HELPER_CONTEXT
 #define HELPER_CONTEXT
 
-#include "glm/fwd.hpp"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <cstdio>
-#include <cstdlib>
 #include <fstream>
 #include <functional>
 #include <glm/glm.hpp>
 #include <iostream>
 #include <sstream>
 #include <stdio.h>
-#include <string>
 
 namespace gl {
 GLFWwindow *mkWindowContextCurrent(unsigned int SCR_WIDTH,

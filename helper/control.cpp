@@ -1,8 +1,8 @@
 #ifndef HELPER_CONTROL
 #define HELPER_CONTROL
 #include "glm/ext/matrix_transform.hpp"
-#include "glm/fwd.hpp"
 #include "glm/glm.hpp"
+#include <functional>
 #include <iostream>
 
 class control {
@@ -24,9 +24,14 @@ public:
       y = _y;
   }
 
+  void on_error(std::function<void(int, std::string)> func) {
+    err_func = func;
+  }
+
   void move_ver(float d_y) {
     if ((y + d_y > max_y) || (y + d_y < min_y)) {
-      throw moved_out_of_bounds();
+      err_func(1, "moved_out_of_bounds");
+      /* throw moved_out_of_bounds(); */
     }
     y += d_y;
     using std::cout;
@@ -39,7 +44,8 @@ public:
 
   void move_hor(float d_x) {
     if ((x + d_x > max_x) || (x + d_x < min_x)) {
-      throw moved_out_of_bounds();
+      err_func(1, "moved_out_of_bounds");
+      /* throw moved_out_of_bounds(); */
     }
     using std::cout;
     using std::endl;
@@ -55,6 +61,7 @@ private:
   const int max_x, min_x, max_y, min_y;
   const glm::vec3 move_x, move_y;
   const glm::mat4 zero;
+  std::function<void(int, std::string)> err_func;
 };
 
 #endif

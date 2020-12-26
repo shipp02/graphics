@@ -4,7 +4,6 @@
 #include <GL/glew.h>
 #include <iostream>
 #include <memory>
-#include <string>
 #include <vector>
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -37,7 +36,7 @@ enum point_type {
   V
 
 };
-
+using std::shared_ptr;
 class buffer;
 // order in ps must be same as required order in the buffer
 // 0th element in point_type will be bound to 0, 0+nth points in buffer
@@ -52,7 +51,7 @@ public:
     }
   }
 
-  using ptr = std::shared_ptr<bind_point>;
+  using ptr = shared_ptr<bind_point>;
 
   static ptr bind_XYZ(string _name, GLuint _location) {
     return std::make_shared<bind_point>(_name, _location,
@@ -69,7 +68,7 @@ private:
 
 #define FLOAT_SIZE(x) x * sizeof(float)
 
-using std::shared_ptr;
+
 class buffer : public std::enable_shared_from_this<buffer> {
 public:
   buffer(generator &g, binder &b) { genAndBind(_buffer, g, b); };

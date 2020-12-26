@@ -8,10 +8,9 @@
 #include <map>
 #include <memory>
 #include <sstream>
-#include <stdio.h>
+#include <cstdio>
 #include <string>
 
-#include "./buffer.cpp"
 using std::cout;
 
 namespace gl {
@@ -43,14 +42,14 @@ void backgroundColor(float r, float g, float b, float a) {
 }
 
 // error_handler error_printer;
-void error_printer(int err, string describe) {
+void error_printer(int err, string &describe) {
   cout << "Error code: " << err << endl;
   cout << "Error description: " << describe << endl;
 }
 
 class shader {
 public:
-  shader(GLenum t, string sourceFile) {
+  shader(GLenum t, string &sourceFile) {
     type = t;
     auto Ssource = reader(sourceFile.c_str());
     auto source = Ssource.c_str();
@@ -198,7 +197,8 @@ std::vector<GLfloat> cube{
     -0.5f, 1.0f,  1.0f,  1.0f,  1.0f,  1.0f,  0.5f,  0.5f,  0.5f,  1.0f,
     1.0f,  1.0f,  1.0f,  0.0f,  0.5f,  0.5f,  0.5f,  1.0f,  1.0f,  1.0f,
     1.0f,  0.0f,  -0.5f, 0.5f,  0.5f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f,
-    -0.5f, 0.5f,  -0.5f, 1.0f,  1.0f,  1.0f,  0.0f,  1.0f};
+    -0.5f, 0.5f,  -0.5f, 1.0f,  1.0f,  1.0f,  0.0f,  1.0f
+};
 
 std::vector<float> square{
     -0.5f, -0.5f, -0.5f, 1.0f, 1.0f,  1.0f, 0.0f,  0.0f, 0.5f,  -0.5f,
@@ -207,6 +207,6 @@ std::vector<float> square{
     1.0f,  1.0f,  -0.5f, 0.5f, -0.5f, 1.0f, 1.0f,  1.0f, 0.0f,  1.0f,
     -0.5f, -0.5f, -0.5f, 1.0f, 1.0f,  1.0f, 0.0f,  0.0f,
 };
-}; // namespace vertices
+} // namespace vertices
 
 #endif

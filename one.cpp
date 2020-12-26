@@ -4,23 +4,15 @@
 #include "shader.cpp"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include <glm/detail/qualifier.hpp>
-#include <glm/ext/matrix_transform.hpp>
-#include <glm/fwd.hpp>
-#include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
-#include <map>
-#include <math.h>
-#include <memory>
 #include <ostream>
-#include <stdio.h>
 #include <string>
 
 std::unique_ptr<control> player_c = nullptr;
 
-void key_call(GLFWwindow *window, int character, int b, int action, int d) {
+void key_call(GLFWwindow *window, int character, int /*b*/, int action, int /*d*/) {
   using namespace std;
 
   if (action != GLFW_PRESS) {
@@ -43,6 +35,7 @@ void key_call(GLFWwindow *window, int character, int b, int action, int d) {
     player_c->move_hor(-1.0f);
   }
 }
+
 int SCR_WIDTH = 800;
 int SCR_HEIGHT = 600;
 using gl::point_type;
@@ -117,7 +110,7 @@ board createAndBindBoard() {
                p1->matLocation("model")};
 }
 
-void drawBoard(board brd) {
+void drawBoard(const board &brd) {
   brd.p->use();
   gl::printErrors("In function..");
   glBindVertexArray(brd.vao);
@@ -135,11 +128,14 @@ void drawBoard(board brd) {
     vModel = model;
   }
   model = brd.base;
-  vModel = brd.base;
+//  vModel = brd.base;
 }
 
+void move_err(int x, std::string y) {
+    cout<<"error: "<<x<<std::endl;
+    cout<<y<<std::endl;
+}
 int main() {
-  // -------------------------------- INIT ------------------------------- //
 
   // Init GLFW
   auto window = gl::mkWindowContextCurrent(800, 600);
@@ -148,7 +144,7 @@ int main() {
   auto brd = createAndBindBoard();
 
   player_c = std::make_unique<control>(9, 0, 0, -9, brd.base, glm::vec3(1.2f, 0.0f, 0.0f), -glm::vec3(0.0f, -1.2f, 0.0f));
-
+  player_c->on_error(move_err);
 
   gl::program player("shaders/model.1.vert", "shaders/model.1.frag");
   player.use();
@@ -198,7 +194,7 @@ int main() {
 
   auto modelMatPos = player.matLocation("model");
   glUniformMatrix4fv(modelMatPos, 1, GL_FALSE, glm::value_ptr(player_c->pos));
-  gl::texture("models/8_Bit_Mario.png");
+  gl::texture tex("models/8_Bit_Mario.png");
 
   gl::printErrors("before loop");
   gl::backgroundColor(0.807, 0.823, 0.909, 1.0);
