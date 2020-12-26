@@ -1,6 +1,7 @@
 build/**
 .clangd/**
 .metadata/**
+cmake-build-debug/**
 .DS_STORE
 .project
 *.png
