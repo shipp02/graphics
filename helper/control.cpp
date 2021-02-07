@@ -13,13 +13,13 @@ control::control(int _max_x, int _max_y, int _min_x, int _min_y, glm::mat4 _zero
     y = 0;
 }
 
-void control::set_zero(int _x, int _y) {
+void control::  set_zero(int _x, int _y) {
     x = _x;
     y = _y;
 }
 
 void control::on_error(std::function<void(int, std::string)> func) {
-    err_func = func;
+    err_func = std::move(func);
 }
 
 void control::move_ver(float d_y) {
