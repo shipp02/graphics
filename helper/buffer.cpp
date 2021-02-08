@@ -87,7 +87,15 @@ namespace gl {
         glBufferData(GL_ARRAY_BUFFER, points.size() * sizeof(float), &points[0],
                      GL_STATIC_DRAW);
     }
-  buffer::ptr StandardBuffer(std::vector<float> &points) {
+
+    buffer::ptr buffer::with_bind_point(const program::ptr& p, string name, std::vector<point_type> ps) {
+        using std::cout;
+        auto point = p->attribBindPoint(std::move(name), ps);
+        with_bind_point(point);
+        return shared_from_this();
+    }
+
+    buffer::ptr StandardBuffer(std::vector<float> &points) {
     return std::make_shared<buffer>(points, vector<gl::point_type>{
                     point_type::X,
                     point_type::Y,

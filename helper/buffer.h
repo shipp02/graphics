@@ -6,7 +6,9 @@
 #define OPENGL_WITH_CONAN_BUFFER_H
 
 #include "bind_point.h"
+#include "program.h"
 #include <vector>
+#include <string>
 namespace gl {
     class buffer : public std::enable_shared_from_this<buffer> {
     public:
@@ -16,6 +18,9 @@ namespace gl {
 
         using ptr = std::shared_ptr<buffer>;
         ptr with_bind_point(bind_point::ptr point);
+
+        ptr with_bind_point(const program::ptr&  p, std::string name, std::vector<point_type> ps);
+
         ptr set_data(std::vector<float> &_points,
                      std::vector<point_type> &_types);
 
@@ -25,6 +30,7 @@ namespace gl {
         std::vector<point_type> types;
         uint32_t assigned;
         void save_to_gpu();
+
     };
   buffer::ptr StandardBuffer(std::vector<float> &points);
 }

@@ -21,10 +21,12 @@ void control::set_zero(int _x, int _y) {
 void control::on_error(std::function<void(int, std::string)> func) {
     err_func = std::move(func);
 }
-
+using std::cout;
+using std::endl;
 void control::move_ver(float d_y) {
     if ((y + d_y > max_y) || (y + d_y < min_y)) {
         err_func(1, "moved_out_of_bounds");
+//        cout << "x: " << x << "y: " << y << endl;
         return;
         /* throw moved_out_of_bounds(); */
     }
@@ -32,7 +34,7 @@ void control::move_ver(float d_y) {
     using std::cout;
     using std::endl;
 
-    cout << "x: " << x << "y: " << y << endl;
+//    cout << "x: " << x << "y: " << y << endl;
     pos = glm::translate(zero, y * move_y);
     pos = glm::translate(pos, x * move_x);
 }
@@ -40,13 +42,14 @@ void control::move_ver(float d_y) {
 void control::move_hor(float d_x) {
     if (x + d_x > max_x || x + d_x < min_x) {
         err_func(1, "moved_out_of_bounds");
+        cout << "x: " << x << "y: " << y << endl;
         return;
         /* throw moved_out_of_bounds(); */
     }
     using std::cout;
     using std::endl;
 
-    cout << "x: " << x << "y: " << y << endl;
+//    cout << "x: " << x << "y: " << y << endl;
     x += d_x;
     pos = glm::translate(zero, y * move_y);
     pos = glm::translate(pos, x * move_x);

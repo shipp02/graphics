@@ -9,7 +9,7 @@
 #include <memory>
 #include "shader.h"
 #include <map>
-#include "buffer.h"
+#include "bind_point.h"
 #include <string>
 #include <GL/glew.h>
 
@@ -34,6 +34,8 @@ namespace gl {
         ~program();
 
         std::map<std::string, gl::bind_point::ptr> binds;
+        using ptr = std::shared_ptr<program>;
+
     private:
         gl::shader vShader;
         gl::shader fShader;
