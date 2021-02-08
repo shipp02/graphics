@@ -26,6 +26,7 @@ namespace gl {
         uint32_t assigned;
         void save_to_gpu();
     };
+  buffer::ptr StandardBuffer(std::vector<float> &points);
 }
 
 #endif //OPENGL_WITH_CONAN_BUFFER_H

@@ -13,7 +13,7 @@ control::control(int _max_x, int _max_y, int _min_x, int _min_y, glm::mat4 _zero
     y = 0;
 }
 
-void control::  set_zero(int _x, int _y) {
+void control::set_zero(int _x, int _y) {
     x = _x;
     y = _y;
 }
@@ -25,6 +25,7 @@ void control::on_error(std::function<void(int, std::string)> func) {
 void control::move_ver(float d_y) {
     if ((y + d_y > max_y) || (y + d_y < min_y)) {
         err_func(1, "moved_out_of_bounds");
+        return;
         /* throw moved_out_of_bounds(); */
     }
     y += d_y;
@@ -39,6 +40,7 @@ void control::move_ver(float d_y) {
 void control::move_hor(float d_x) {
     if (x + d_x > max_x || x + d_x < min_x) {
         err_func(1, "moved_out_of_bounds");
+        return;
         /* throw moved_out_of_bounds(); */
     }
     using std::cout;

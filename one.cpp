@@ -1,3 +1,4 @@
+#include "bind_point.h"
 #include "buffer.h"
 #include "context.cpp"
 #include "control.h"
@@ -41,8 +42,6 @@ void key_call(GLFWwindow *window, int character, int /*b*/, int action, int /*d*
 
 int SCR_WIDTH = 800;
 int SCR_HEIGHT = 600;
-using gl::point_type;
-using std::vector;
 
 
 void move_err(int x, std::string y) {
@@ -67,32 +66,10 @@ int main() {
     GLuint vao;
     gl::genAndBind(vao, glGenVertexArrays, glBindVertexArray);
 
-    auto player_Pos = player.attribBindPoint(
-            "Pos", vector<point_type>{point_type::X, point_type::Y, point_type::Z});
-    gl::printErrors("before loop 2");
-
-    auto player_fColor = player.attribBindPoint(
-            "fColor",
-            vector<point_type>{point_type::Red, point_type::Green, point_type::Blue});
-
-    auto player_fTexCoords = player.attribBindPoint(
-            "fTexCoords", vector<point_type>{point_type::U, point_type::V});
-
-    auto b = std::make_shared<gl::buffer>(
-            vertices::square,
-            vector<gl::point_type>{
-                    point_type::X,
-                    point_type::Y,
-                    point_type::Z,
-                    point_type::Red,
-                    point_type::Green,
-                    point_type::Blue,
-                    point_type::U,
-                    point_type::V,
-            })
-            ->with_bind_point(player_Pos)
-            ->with_bind_point(player_fColor)
-            ->with_bind_point(player_fTexCoords);
+    auto b = gl::StandardBuffer(vertices::square)
+            ->with_bind_point(player, "Pos", gl::XYZ)
+            ->with_bind_point(player, "fColor", gl::RGB)
+            ->with_bind_point(player, "fTexCoords", gl::UV);
 
     /* auto cfg  = gl::read_config("player.cfg"); */
     /* cout << cfg.far << " " << cfg.near << " " << cfg.fov << std::endl; */

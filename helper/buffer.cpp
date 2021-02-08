@@ -1,5 +1,6 @@
 #include <GL/glew.h>
 #include <iostream>
+#include <memory>
 #include <utility>
 #include <vector>
 #include "bind_point.h"
@@ -86,6 +87,19 @@ namespace gl {
         glBufferData(GL_ARRAY_BUFFER, points.size() * sizeof(float), &points[0],
                      GL_STATIC_DRAW);
     }
+  buffer::ptr StandardBuffer(std::vector<float> &points) {
+    return std::make_shared<buffer>(points, vector<gl::point_type>{
+                    point_type::X,
+                    point_type::Y,
+                    point_type::Z,
+                    point_type::Red,
+                    point_type::Green,
+                    point_type::Blue,
+                    point_type::U,
+                    point_type::V,
+      });
+  }
+			     
 
 
 }; // namespace gl

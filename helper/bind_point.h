@@ -20,6 +20,10 @@ namespace gl {
         U,
         V
     };
+  extern std::vector<point_type> RGB;
+  extern std::vector<point_type> XYZ;
+  extern std::vector<point_type> UV;
+  
 
     class bind_point {
     public:

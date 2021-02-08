@@ -3,12 +3,13 @@
 //
 
 #include "board.h"
+#include "bind_point.h"
+#include "buffer.h"
 #include "glm/ext/matrix_transform.hpp"
-#include "glm/fwd.hpp"
 #include "glm/common.hpp"
-#include "glm/vec2.hpp"
-#include "glm/vec4.hpp"
+#include "program.h"
 #include "utils.h"
+#include <memory>
 
 using std::vector;
 
@@ -19,37 +20,13 @@ board createAndBindBoard() {
     p1->use();
     gl::printErrors("before loop 4");
     GLuint vao;
-    gl::printErrors("before loop 3");
     gl::genAndBind(vao, glGenVertexArrays, glBindVertexArray);
 
-    auto p_Pos = p1->attribBindPoint(
-            "Pos", vector < gl::point_type > {gl::point_type::X, gl::point_type::Y, gl::point_type::Z});
+    auto b = gl::StandardBuffer(vertices::square)
+            ->with_bind_point(p1, "Pos", gl::XYZ)
+            ->with_bind_point(p1, "fColor", gl::RGB)
+            ->with_bind_point(p1, "fTexCoords", gl::UV);
 
-    gl::printErrors("before loop 2");
-
-    auto p_fColor = p1->attribBindPoint(
-            "fColor",
-            vector < gl::point_type > {gl::point_type::Red, gl::point_type::Green, gl::point_type::Blue});
-
-    auto p_fTexCoords = p1->attribBindPoint(
-            "fTexCoords", vector < gl::point_type > {gl::point_type::U, gl::point_type::V});
-
-    auto b = std::make_shared<gl::buffer>(
-            vertices::square,
-            vector < gl::point_type > {
-                    gl::point_type::X,
-                    gl::point_type::Y,
-                    gl::point_type::Z,
-                    gl::point_type::Red,
-                    gl::point_type::Green,
-                    gl::point_type::Blue,
-                    gl::point_type::U,
-                    gl::point_type::V,
-            })
-            ->with_bind_point(p_Pos)
-            ->with_bind_point(p_fColor)
-            ->with_bind_point(p_fTexCoords);
-    /* cout<<"Not yet.."<<std::endl; */
     const auto baseModel =
             glm::translate(glm::mat4(1.0f), glm::vec3(-8.00f, 5.0f, 0.0f));
     auto viewMatPos = p1->matLocation("view");
@@ -76,8 +53,8 @@ board createAndBindBoard() {
     brd};
 }
 
-std::vector<glm::mat4> make_board(glm::mat4 base, glm::vec3 hTrans, glm::vec3 vTrans, int x, int y) {
-  std::vector<glm::mat4> pos(x*y);
+vector<glm::mat4> make_grid(glm::mat4 base, glm::vec3 hTrans, glm::vec3 vTrans, int x, int y) {
+  vector<glm::mat4> pos(x*y);
   for (float i  = 0;i<y;i++){
     for(float j = 0; j<x;j++){
       pos[i*x+j] =  glm::translate(base, hTrans* j + vTrans*i);
@@ -98,3 +75,14 @@ void drawBoard(const board &brd) {
     }
 }
 
+using std::string;
+using gl::bind_point;
+// Represents a program with XYZ coordinates and RGBUV colors
+struct StandardObject {
+  std::shared_ptr<gl::program> program;
+  GLuint vao;
+  bind_point::ptr XYZ_bind;
+  bind_point::ptr RGB_bind;
+  bind_point::ptr UV_bind;
+
+};
