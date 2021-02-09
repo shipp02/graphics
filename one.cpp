@@ -16,27 +16,45 @@
 
 std::shared_ptr<control> player_c = nullptr;
 
+struct _key_state {
+    int speed;
+    int key;
+  int max_speed = 5;
+};
+
+static auto key_state = _key_state{};
+
 void key_call(GLFWwindow *window, int character, int /*b*/, int action, int /*d*/) {
     using namespace std;
 
-    if (action != GLFW_PRESS) {
-        return;
+//    if (action != GLFW_PRESS) {
+//        return;
+//    }
+    if(action == GLFW_RELEASE) {
+      key_state.key = -1;
+      key_state.speed = 0;
+    } else if (action == GLFW_PRESS) {
+      key_state.speed = 1;
+        key_state.key = character;
+    } else if (action == GLFW_REPEAT && key_state.speed <= key_state.max_speed) {
+      key_state.speed++;
     }
+#define SPEED(state) state.speed * 1.0f
 
     if (character == GLFW_KEY_Q) {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
     } else if (character == GLFW_KEY_UP) {
         /* cout<<"UP"<<endl; */
-        player_c->move_ver(1.0f);
+      player_c->move_ver(SPEED(key_state));
     } else if (character == GLFW_KEY_DOWN) {
         /* cout<<"DOWN"<<endl; */
-        player_c->move_ver(-1.0f);
+      player_c->move_ver(-SPEED(key_state));
     } else if (character == GLFW_KEY_RIGHT) {
         /* cout<<"RIGHT"<<endl; */
-        player_c->move_hor(1.0f);
+      player_c->move_hor(SPEED(key_state));
     } else if (character == GLFW_KEY_LEFT) {
         /* cout<<"LEFT"<<endl; */
-        player_c->move_hor(-1.0f);
+      player_c->move_hor(-SPEED(key_state));
     }
 }
 
