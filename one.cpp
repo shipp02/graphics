@@ -13,56 +13,78 @@
 #include <iostream>
 #include <ostream>
 #include <string>
+#include <thread_pool.h>
 
 std::shared_ptr<control> player_c = nullptr;
+thread_pool pool(1);
 
-struct _key_state {
+using shared_atomic_int = std::shared_ptr<std::atomic_int>;
+
+struct keyState {
     int speed;
     int key;
-  int max_speed = 5;
+    int max_speed = 5;
+    shared_atomic_int key_pressed;
+    shared_atomic_int action;
+    time_t t;
 };
 
-static auto key_state = _key_state{};
+static auto key_state = keyState{};
+
+//std::packaged_task<void()> task([](keyState &ks){
+//    int pressed_key = GLFW_KEY_UNKNOWN;
+//#pragma clang diagnostic push
+//#pragma ide diagnostic ignored "EndlessLoop"
+//    while(true) {
+//        if(ks.action == GLFW_RELEASE) {
+//            *ks.key_pressed = GLFW_KEY_UNKNOWN;
+//        }
+//        if(*ks.key_pressed != pressed_key && *ks.action == GLFW_PRESS) {
+//            pressed_key = *ks.key_pressed;
+//            std::time(&ks.t);
+//        }
+//    }
+//#pragma clang diagnostic pop
+//});
+
+
+using return_control = std::shared_future<std::shared_ptr<control>>;
 
 void key_call(GLFWwindow *window, int character, int /*b*/, int action, int /*d*/) {
     using namespace std;
 
-//    if (action != GLFW_PRESS) {
-//        return;
-//    }
-    if(action == GLFW_RELEASE) {
-      key_state.key = -1;
-      key_state.speed = 0;
+    if (action == GLFW_RELEASE) {
+        key_state.key = -1;
+        key_state.speed = 0;
     } else if (action == GLFW_PRESS) {
-      key_state.speed = 1;
+        key_state.speed = 1;
         key_state.key = character;
     } else if (action == GLFW_REPEAT && key_state.speed <= key_state.max_speed) {
-      key_state.speed++;
+        key_state.speed++;
     }
 #define SPEED(state) state.speed * 1.0f
+//    std::shared_future<std::shared_ptr<control>> xs;
+    return_control xs;
 
     if (character == GLFW_KEY_Q) {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
     } else if (character == GLFW_KEY_UP) {
-        /* cout<<"UP"<<endl; */
-      player_c->move_ver(SPEED(key_state));
+        xs = pool.enqueue([=](keyState &arg) { return player_c->move_ver(SPEED(arg)); }, key_state).share();
     } else if (character == GLFW_KEY_DOWN) {
-        /* cout<<"DOWN"<<endl; */
-      player_c->move_ver(-SPEED(key_state));
+        xs = pool.enqueue([=](keyState &arg) { return player_c->move_ver(-SPEED(arg)); }, key_state).share();
     } else if (character == GLFW_KEY_RIGHT) {
-        /* cout<<"RIGHT"<<endl; */
-      player_c->move_hor(SPEED(key_state));
+        xs = pool.enqueue([=](keyState &arg) { return player_c->move_hor(SPEED(arg)); }, key_state).share();
     } else if (character == GLFW_KEY_LEFT) {
-        /* cout<<"LEFT"<<endl; */
-      player_c->move_hor(-SPEED(key_state));
+        xs = pool.enqueue([=](keyState &arg) { return player_c->move_hor(-SPEED(arg)); }, key_state).share();
     }
+    glfwSetWindowUserPointer(window, new return_control(xs));
 }
 
 const int SCR_WIDTH = 800;
 const int SCR_HEIGHT = 600;
 
 
-void move_err(int x, std::string y) {
+void move_err(int x, const std::string &y) {
     std::cout << "error: " << x << std::endl;
     std::cout << y << std::endl;
 }
@@ -82,6 +104,8 @@ int main() {
                                          glm::vec3(0.12f, 0.0f, 0.0f),
                                          -glm::vec3(0.0f, -0.12f, 0.0f));
     player_c->on_error(move_err);
+    auto u_pointer = pool.enqueue([=]() { return player_c; }).share();
+    glfwSetWindowUserPointer(window, &u_pointer);
 
     gl::program::ptr player = std::make_shared<gl::program>("shaders/model.1.vert", "shaders/model.1.frag");
     player->use();
@@ -127,6 +151,8 @@ int main() {
         drawBoard(brd);
         player->use();
         glBindVertexArray(vao);
+        auto j = *static_cast<std::shared_future<std::shared_ptr<control>> *>(glfwGetWindowUserPointer(window));
+        player_c = j.get();
         glUniformMatrix4fv(modelMatPos, 1, GL_FALSE, glm::value_ptr(player_c->pos));
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
