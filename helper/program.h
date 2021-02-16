@@ -44,6 +44,6 @@ namespace gl {
         std::string err_describe;
         error_handler err_func{};
     };
-};
+}
 
 #endif //OPENGL_WITH_CONAN_PROGRAM_H

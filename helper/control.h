@@ -19,9 +19,9 @@ public:
 
     void on_error(std::function<void(int, std::string)> func);
 
-    std::shared_ptr<control> move_ver(float d_y);
+    std::vector<control> move_ver(float d_y, int split = 1);
 
-    std::shared_ptr<control> move_hor(float d_x);
+    std::vector<control> move_hor(float d_x, int split = 1);
 
     glm::mat4 pos;
 private:
@@ -32,5 +32,6 @@ private:
     std::function<void(int, std::string)> err_func;
     std::time_t t;
 };
+
 
 #endif //OPENGL_WITH_CONAN_CONTROL_H

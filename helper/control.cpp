@@ -3,6 +3,7 @@
 #include "glm/glm.hpp"
 #include <functional>
 #include <iostream>
+#include <vector>
 
 
 control::control(int _max_x, int _max_y, int _min_x, int _min_y, glm::mat4 _zero,
@@ -24,38 +25,56 @@ void control::on_error(std::function<void(int, std::string)> func) {
 }
 using std::cout;
 using std::endl;
-std::shared_ptr<control> control::move_ver(float d_y) {
+std::vector<control> control::move_ver(float d_y, int split) {
     if ((y + d_y > max_y) || (y + d_y < min_y)) {
         err_func(1, "moved_out_of_bounds");
 //        cout << "x: " << x << "y: " << y << endl;
-        return shared_from_this();
+        return std::vector<control>(0);
         /* throw moved_out_of_bounds(); */
     }
-    auto n = std::make_shared<control>(*this);
-    n->y += d_y;
-    using std::cout;
-    using std::endl;
-
+    std::vector<control> ctrl(split);
+    auto d_y_per = d_y/split;
+    const auto pos_x = glm::translate(zero, x * move_x);
+////    This indexing is safe since we initialized
+////     it to the size that we are going to index into it
+    for (int i = 0; i < split; ++i) {
+        auto n = *this;
+        n.y += d_y_per * (i+1);
+        n.pos = glm::translate(pos_x, n.y * move_y);
+    }
+//    auto n = std::make_shared<control>(*this);
+//    n->y += d_y;
+//    using std::cout;
+//    using std::endl;
+//
 //    cout << "x: " << x << "y: " << y << endl;
-    n->pos = glm::translate(zero, n->y * move_y);
-    n->pos = glm::translate(n->pos, n->x * move_x);
-    return n;
+//    n->pos = glm::translate(zero, n->y * move_y);
+//    n->pos = glm::translate(n->pos, n->x * move_x);
+    return ctrl;
 }
 
-std::shared_ptr<control> control::move_hor(float d_x) {
+std::vector<control> control::move_hor(float d_x, int split) {
     if (x + d_x > max_x || x + d_x < min_x) {
         err_func(1, "moved_out_of_bounds");
         cout << "x: " << x << "y: " << y << endl;
-        return shared_from_this();
+        return std::vector<control>(0);
         /* throw moved_out_of_bounds(); */
     }
     using std::cout;
     using std::endl;
-    auto n = std::make_shared<control>(*this);
+    std::vector<control> ctrl(split);
+    auto d_x_per = d_x/split;
+    const auto pos_y = glm::translate(zero, y* move_y);
+    for (int i = 0; i < split; ++i) {
+        auto n = *this;
+        n.y += d_x_per * (i+1);
+        n.pos = glm::translate(pos_y, n.x * move_x);
+    }
+//    auto n = std::make_shared<control>(*this);
 //    cout << "x: " << x << "y: " << y << endl;
-    n->x += d_x;
-    n->pos = glm::translate(zero, n->y * move_y);
-    n->pos = glm::translate(n->pos, n->x * move_x);
-    return n;
+//    n->x += d_x;
+//    n->pos = glm::translate(zero, n->y * move_y);
+//    n->pos = glm::translate(n->pos, n->x * move_x);
+    return ctrl;
 }
 

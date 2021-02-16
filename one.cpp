@@ -13,9 +13,11 @@
 #include <iostream>
 #include <ostream>
 #include <string>
+#include <stack>
 #include <thread_pool.h>
 
-std::shared_ptr<control> player_c = nullptr;
+using return_control = std::shared_future<std::shared_ptr<control>>;
+std::stack<return_control> player_c = std::stack<return_control>{};
 thread_pool pool(1);
 
 using shared_atomic_int = std::shared_ptr<std::atomic_int>;
@@ -30,25 +32,26 @@ struct keyState {
 };
 
 static auto key_state = keyState{};
+using namespace std::chrono;
 
-//std::packaged_task<void()> task([](keyState &ks){
-//    int pressed_key = GLFW_KEY_UNKNOWN;
-//#pragma clang diagnostic push
-//#pragma ide diagnostic ignored "EndlessLoop"
-//    while(true) {
-//        if(ks.action == GLFW_RELEASE) {
-//            *ks.key_pressed = GLFW_KEY_UNKNOWN;
-//        }
-//        if(*ks.key_pressed != pressed_key && *ks.action == GLFW_PRESS) {
-//            pressed_key = *ks.key_pressed;
-//            std::time(&ks.t);
-//        }
-//    }
-//#pragma clang diagnostic pop
-//});
+bool gt(glm::vec3 left, glm::vec3 right) {
+    return left.x > right.x &&
+           left.y > right.y &&
+           left.z > right.z;
+}
 
+// min is minimum movement per 100ms
+// max is max per 100ms
+glm::vec3 move_size(glm::vec3 min, long dur) {
+    return min * (float) dur;
+}
 
-using return_control = std::shared_future<std::shared_ptr<control>>;
+glm::mat4
+resolve_frame(const std::function<glm::vec3(long)> &move, glm::mat4 current, long old, long now) {
+    auto movement = move(now - old);
+    return glm::translate(current, movement);
+}
+
 
 void key_call(GLFWwindow *window, int character, int /*b*/, int action, int /*d*/) {
     using namespace std;
@@ -63,20 +66,28 @@ void key_call(GLFWwindow *window, int character, int /*b*/, int action, int /*d*
         key_state.speed++;
     }
 #define SPEED(state) state.speed * 1.0f
-//    std::shared_future<std::shared_ptr<control>> xs;
     return_control xs;
+
+    auto vertical_move = [&](float speed) {
+        return player_c.top().get()->move_ver(speed);
+    };
+    auto hor_move = [=](float speed) {
+        return player_c.top().get()->move_hor(speed);
+    };
 
     if (character == GLFW_KEY_Q) {
         glfwSetWindowShouldClose(window, GLFW_TRUE);
     } else if (character == GLFW_KEY_UP) {
-        xs = pool.enqueue([=](keyState &arg) { return player_c->move_ver(SPEED(arg)); }, key_state).share();
+        xs = pool.enqueue(vertical_move, SPEED(key_state)).share();
     } else if (character == GLFW_KEY_DOWN) {
-        xs = pool.enqueue([=](keyState &arg) { return player_c->move_ver(-SPEED(arg)); }, key_state).share();
+        xs = pool.enqueue(vertical_move, -SPEED(key_state)).share();
     } else if (character == GLFW_KEY_RIGHT) {
-        xs = pool.enqueue([=](keyState &arg) { return player_c->move_hor(SPEED(arg)); }, key_state).share();
+        xs = pool.enqueue(
+                hor_move, SPEED(key_state)).share();
     } else if (character == GLFW_KEY_LEFT) {
-        xs = pool.enqueue([=](keyState &arg) { return player_c->move_hor(-SPEED(arg)); }, key_state).share();
+        pool.enqueue(hor_move, -SPEED(key_state)).share();
     }
+    player_c.push(xs);
     glfwSetWindowUserPointer(window, new return_control(xs));
 }
 
@@ -100,12 +111,20 @@ int main() {
     // To edge for y: -6,6
     auto player_base = glm::translate(glm::mat4(1.0f), glm::vec3(8.20f, -4.0f, 0.0f));
 
-    player_c = std::make_unique<control>(9, 0, -136, 0, player_base,
-                                         glm::vec3(0.12f, 0.0f, 0.0f),
-                                         -glm::vec3(0.0f, -0.12f, 0.0f));
-    player_c->on_error(move_err);
-    auto u_pointer = pool.enqueue([=]() { return player_c; }).share();
-    glfwSetWindowUserPointer(window, &u_pointer);
+    auto same = [](std::shared_ptr<control> c) {
+        return c;
+    };
+
+    player_c.push(pool.enqueue(same, std::make_shared<control>(9, 0, -136, 0, player_base,
+                                                 glm::vec3(0.12f, 0.0f, 0.0f),
+                                                 -glm::vec3(0.0f, -0.12f, 0.0f))).share());
+
+//    player_c.push(std::make_unique<control>(9, 0, -136, 0, player_base,
+//                                         glm::vec3(0.12f, 0.0f, 0.0f),
+//                                         -glm::vec3(0.0f, -0.12f, 0.0f)));
+//    player_c->on_error(move_err);
+//    auto u_pointer = pool.enqueue([=]() { return player_c; }).share();
+//    glfwSetWindowUserPointer(window, &u_pointer);
 
     gl::program::ptr player = std::make_shared<gl::program>("shaders/model.1.vert", "shaders/model.1.frag");
     player->use();
@@ -130,7 +149,7 @@ int main() {
     glUniformMatrix4fv(projMatPos, 1, GL_FALSE, glm::value_ptr(proj));
 
     auto modelMatPos = player->matLocation("model");
-    glUniformMatrix4fv(modelMatPos, 1, GL_FALSE, glm::value_ptr(player_c->pos));
+    glUniformMatrix4fv(modelMatPos, 1, GL_FALSE, glm::value_ptr(player_c.top().get()->pos));
     gl::texture tex("models/8_Bit_Mario.png");
 
     gl::backgroundColor(0.807, 0.823, 0.909, 1.0);
@@ -138,7 +157,7 @@ int main() {
 
     gl::printErrors("before loop.");
     player->use();
-    glUniformMatrix4fv(modelMatPos, 1, GL_FALSE, glm::value_ptr(player_c->pos));
+    glUniformMatrix4fv(modelMatPos, 1, GL_FALSE, glm::value_ptr(player_c.top().get()->pos));
     glBindVertexArray(vao);
 
     gl::printErrors("before loop..");
@@ -146,15 +165,19 @@ int main() {
     glfwSwapBuffers(window);
     glfwPollEvents();
 
+
+    std::vector<control> frames;
     while (!glfwWindowShouldClose(window)) {
         gl::backgroundColor(0.807, 0.823, 0.909, 1.0);
         drawBoard(brd);
         player->use();
         glBindVertexArray(vao);
-        auto j = *static_cast<std::shared_future<std::shared_ptr<control>> *>(glfwGetWindowUserPointer(window));
-        player_c = j.get();
-        glUniformMatrix4fv(modelMatPos, 1, GL_FALSE, glm::value_ptr(player_c->pos));
+//        auto j = *static_cast<std::shared_future<std::shared_ptr<control>> *>(glfwGetWindowUserPointer(window));
+        auto j = player_c.top();
+//        player_c = j.get();
+        glUniformMatrix4fv(modelMatPos, 1, GL_FALSE, glm::value_ptr(player_c.top().get()->pos));
         glDrawArrays(GL_TRIANGLES, 0, 6);
+        player_c.pop();
 
         glfwSwapBuffers(window);
         glfwPollEvents();
