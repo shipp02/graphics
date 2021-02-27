@@ -1,5 +1,6 @@
 #include "control.h"
 #include "glm/ext/matrix_transform.hpp"
+#include "glm/fwd.hpp"
 #include "glm/glm.hpp"
 #include <functional>
 #include <iostream>
@@ -13,6 +14,13 @@ control::control(int _max_x, int _max_y, int _min_x, int _min_y, glm::mat4 _zero
     x = 0;
     y = 0;
     std::time(&t);
+}
+
+control::control() : max_x(0), max_y(0), min_x(0), min_y(0), move_x(glm::vec3(1.0f)), move_y (glm::vec3(1.0f)) , zero (0){
+}
+
+control::control(const control &c) : max_x(c.max_x), max_y(c.max_y), min_x(c.min_x), min_y(c.min_y), zero(c.zero), move_x(c.move_x), move_y(c.move_y){
+
 }
 
 void control::set_zero(int _x, int _y) {

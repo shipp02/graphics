@@ -15,6 +15,10 @@ public:
     control(int _max_x, int _max_y, int _min_x, int _min_y, glm::mat4 _zero,
             glm::vec3 _move_x, glm::vec3 _move_y);
 
+    control();
+
+    control(const control &c);
+
     void set_zero(int _x, int _y);
 
     void on_error(std::function<void(int, std::string)> func);
