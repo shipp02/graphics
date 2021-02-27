@@ -20,14 +20,15 @@ namespace gl {
         U,
         V
     };
-  extern std::vector<point_type> RGB;
-  extern std::vector<point_type> XYZ;
-  extern std::vector<point_type> UV;
-  
+    extern std::vector<point_type> RGB;
+    extern std::vector<point_type> XYZ;
+    extern std::vector<point_type> UV;
+
 
     class bind_point {
     public:
         bind_point(std::string _name, GLuint _location, std::vector<point_type> ps);
+
         using ptr = std::shared_ptr<bind_point>;
         std::vector<point_type> points;
         GLuint location;

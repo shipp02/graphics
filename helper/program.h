@@ -33,6 +33,8 @@ namespace gl {
 
         ~program();
 
+        GLuint get(); 
+
         std::map<std::string, gl::bind_point::ptr> binds;
         using ptr = std::shared_ptr<program>;
 

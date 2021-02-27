@@ -4,6 +4,7 @@
 
 
 #include "program.h"
+#include "utils.h"
 
 namespace gl {
 
@@ -13,7 +14,10 @@ namespace gl {
               fShader(GL_FRAGMENT_SHADER, fragmentSource) {
         _program = glCreateProgram();
         attachShader(vShader);
+	gl::printErrors("program cons");
+	gl::printErrors("program cons2");
         attachShader(fShader);
+	gl::printErrors("program cons.");
         glLinkProgram(_program);
         // TODO:Better error handlng design
         glGetProgramiv(_program, GL_LINK_STATUS, &error);
@@ -60,4 +64,8 @@ namespace gl {
         return glGetUniformLocation(_program, name.c_str());
     }
 
+
+        GLuint program::get() {
+            return _program;
+        }
 }
