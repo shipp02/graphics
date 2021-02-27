@@ -8,10 +8,13 @@ add_definitions("-std=c++17")
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
-include_directories(helper)
-set(SRC one.cpp ${SRC} helper/program.cpp helper/program.h helper/shader.h helper/shader.cpp helper/buffer.h helper/buffer.cpp helper/bind_point.cpp helper/bind_point.h helper/texture.cpp helper/texture.h helper/utils.h helper/utils.cpp
+set(LIB_SRC helper/program.cpp helper/program.h helper/shader.h helper/shader.cpp helper/buffer.h helper/buffer.cpp helper/bind_point.cpp helper/bind_point.h helper/texture.cpp helper/texture.h helper/utils.h helper/utils.cpp
         helper/control.cpp helper/control.h helper/board.cpp helper/board.h helper/thread_pool.cpp helper/thread_pool.h)
+include_directories(helper)
+set(SRC one.cpp ${SRC} ${LIB_SRC})
 file(COPY models DESTINATION ${CMAKE_BINARY_DIR})
 add_executable(conan1 ${SRC})
 target_link_libraries(conan1 ${CONAN_LIBS})
 
+add_executable(lighting ${LIB_SRC} two.cpp)
+target_link_libraries(lighting ${CONAN_LIBS})
