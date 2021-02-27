@@ -24,6 +24,7 @@ namespace gl {
 namespace vertices {
     extern std::vector<GLfloat> cube;
     extern std::vector<float> square;
+  extern std::vector<GLfloat> normal_cube;
 }
 
 #endif //OPENGL_WITH_CONAN_UTILS_H
