@@ -1,4 +1,5 @@
 #include "shader.h"
+#include "utils.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <fstream>
@@ -35,6 +36,7 @@ namespace gl {
     }
 
     shader::shader(GLenum t, std::string sourceFile) {
+      	gl::printErrors("shader cons" + sourceFile);
         type = t;
         auto Ssource = reader(sourceFile.c_str());
         auto source = Ssource.c_str();
@@ -48,16 +50,20 @@ namespace gl {
         // checks for errors
         _shader = glCreateShader(type);
         glShaderSource(_shader, 1, &source, 0);
+	gl::printErrors("shader cons.");
         glCompileShader(_shader);
+		gl::printErrors("shader cons..");
         glGetShaderiv(_shader, GL_COMPILE_STATUS, &error);
         // TODO: Better design for handling error
         if (error != GL_TRUE) {
             err_describe += "Failed to compile shader" + sourceFile;
+	    std::cout << err_describe << std::endl;
             glDeleteShader(_shader);
         }
         char info[512];
         glGetShaderInfoLog(_shader, 512, NULL, info);
         err_describe += info;
+	gl::printErrors("shader cons end" + sourceFile);
     }
 
     void shader::on_error(error_handler handler) {
