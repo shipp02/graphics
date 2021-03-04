@@ -10,21 +10,21 @@
 #include <vector>
 
 namespace gl {
-    using binder = void (*)(GLuint array);
-    using generator = void (*)(GLsizei n, GLuint *array);
+using binder = void (*)(GLuint array);
+using generator = void (*)(GLsizei n, GLuint *array);
 
-    void printErrors(std::string pos);
+void printErrors(std::string pos);
 
-    void backgroundColor(float r, float g, float b, float a);
+void backgroundColor(float r, float g, float b, float a);
 
-    void genAndBind(GLuint &gen, generator g, binder b);
+void genAndBind(GLuint &gen, generator g, binder b);
 
-}
+} // namespace gl
 
 namespace vertices {
-    extern std::vector<GLfloat> cube;
-    extern std::vector<float> square;
-  extern std::vector<GLfloat> normal_cube;
-}
+extern std::vector<GLfloat> cube;
+extern std::vector<float> square;
+extern std::vector<GLfloat> normal_cube;
+} // namespace vertices
 
-#endif //OPENGL_WITH_CONAN_UTILS_H
+#endif // OPENGL_WITH_CONAN_UTILS_H

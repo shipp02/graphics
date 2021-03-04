@@ -5,13 +5,13 @@
 #ifndef OPENGL_WITH_CONAN_CONTROL_H
 #define OPENGL_WITH_CONAN_CONTROL_H
 
-#include <glm/glm.hpp>
 #include <functional>
-#include <string>
+#include <glm/glm.hpp>
 #include <memory>
+#include <string>
 
 class control : public std::enable_shared_from_this<control> {
-public:
+  public:
     control(int _max_x, int _max_y, int _min_x, int _min_y, glm::mat4 _zero,
             glm::vec3 _move_x, glm::vec3 _move_y);
 
@@ -28,7 +28,8 @@ public:
     std::vector<control> move_hor(float d_x, int split = 1);
 
     glm::mat4 pos;
-private:
+
+  private:
     float x, y;
     const int max_x, min_x, max_y, min_y;
     const glm::vec3 move_x, move_y;
@@ -37,5 +38,4 @@ private:
     std::time_t t;
 };
 
-
-#endif //OPENGL_WITH_CONAN_CONTROL_H
+#endif // OPENGL_WITH_CONAN_CONTROL_H

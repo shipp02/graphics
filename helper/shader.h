@@ -8,22 +8,23 @@
 #include <GL/glew.h>
 #include <string>
 namespace gl {
-    class shader {
-        using error_handler = void (*)(int err, std::string describe);
-    public:
-        shader(GLenum t, std::string sourceFile);
+class shader {
+    using error_handler = void (*)(int err, std::string describe);
 
-        void on_error(error_handler handler);
+  public:
+    shader(GLenum t, std::string sourceFile);
 
-        GLuint get() const;
+    void on_error(error_handler handler);
 
-        ~shader();
+    GLuint get() const;
 
-    private:
-        int error = 0;
-        std::string err_describe;
-        GLuint _shader;
-        GLenum type;
-    };
-}
-#endif //OPENGL_WITH_CONAN_SHADER_H
+    ~shader();
+
+  private:
+    int error = 0;
+    std::string err_describe;
+    GLuint _shader;
+    GLenum type;
+};
+} // namespace gl
+#endif // OPENGL_WITH_CONAN_SHADER_H

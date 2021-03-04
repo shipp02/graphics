@@ -4,9 +4,9 @@
 
 #include "thread_pool.h"
 
-
-//template<class F, class... Args>
-//auto thread_pool::enqueue(F f, Args &&... args) -> std::future<typename std::result_of<F(Args...)>::type> {
+// template<class F, class... Args>
+// auto thread_pool::enqueue(F f, Args &&... args) -> std::future<typename
+// std::result_of<F(Args...)>::type> {
 //    using return_type = typename std::result_of<F(Args...)>::type;
 //
 //    auto task = std::make_shared<std::packaged_task<return_type()> >(
@@ -27,7 +27,7 @@
 //    return res;
 //}
 //
-//thread_pool::~thread_pool() {
+// thread_pool::~thread_pool() {
 //    {
 //        std::unique_lock<std::mutex> lock(queue_mutex);
 //        stop = true;
@@ -37,7 +37,7 @@
 //        worker.join();
 //}
 //
-//thread_pool::thread_pool(size_t numThreads) : stop(false) {
+// thread_pool::thread_pool(size_t numThreads) : stop(false) {
 //    for (size_t i = 0; i < numThreads; ++i)
 //        workers.emplace_back(
 //                [this] {
@@ -45,9 +45,11 @@
 //                        std::function<void()> task;
 //
 //                        {
-//                            std::unique_lock<std::mutex> lock(this->queue_mutex);
+//                            std::unique_lock<std::mutex>
+//                            lock(this->queue_mutex);
 //                            this->condition.wait(lock,
-//                                                 [this] { return this->stop || !this->tasks.empty(); });
+//                                                 [this] { return this->stop ||
+//                                                 !this->tasks.empty(); });
 //                            if (this->stop && this->tasks.empty())
 //                                return;
 //                            task = std::move(this->tasks.front());

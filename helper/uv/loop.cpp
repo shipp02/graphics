@@ -12,4 +12,7 @@ loop::~loop()
     uv_loop_close(t);
     delete t;
 }
+void loop::run() {
+    uv_run(t, UV_RUN_DEFAULT);
+}
 } // namespace uv

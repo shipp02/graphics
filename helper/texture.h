@@ -11,24 +11,25 @@
 
 namespace gl {
 
-    struct tex_parameters {
-        GLenum wrap_s;
-        GLenum wrap_t;
-        GLenum min_filter;
-        GLenum max_filter;
-    };
+struct tex_parameters {
+    GLenum wrap_s;
+    GLenum wrap_t;
+    GLenum min_filter;
+    GLenum max_filter;
+};
 
-    extern tex_parameters DefaultTexture;
+extern tex_parameters DefaultTexture;
 
-    class texture {
-    public:
-        explicit texture(std::string path, GLenum activeTexture = GL_TEXTURE0, tex_parameters params = DefaultTexture);
-        ~texture();
-    private:
-        GLuint _texture;
-        std::vector<GLbyte> data;
+class texture {
+  public:
+    explicit texture(std::string path, GLenum activeTexture = GL_TEXTURE0,
+                     tex_parameters params = DefaultTexture);
+    ~texture();
 
-    };
-}
+  private:
+    GLuint _texture;
+    std::vector<GLbyte> data;
+};
+} // namespace gl
 
-#endif //OPENGL_WITH_CONAN_TEXTURE_H
+#endif // OPENGL_WITH_CONAN_TEXTURE_H

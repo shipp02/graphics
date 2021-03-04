@@ -5,15 +5,14 @@
 #ifndef OPENGL_WITH_CONAN_BOARD_H
 #define OPENGL_WITH_CONAN_BOARD_H
 
-
-#include <memory>
-#include <vector>
-#include "glm/fwd.hpp"
-#include "program.h"
 #include "buffer.h"
 #include "control.h"
+#include "glm/fwd.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
+#include "program.h"
+#include <memory>
+#include <vector>
 
 struct board {
     std::shared_ptr<gl::program> p;
@@ -23,25 +22,24 @@ struct board {
     const glm::vec3 vTrans;
     GLuint vao;
     GLint model_mat_pos;
-  std::vector<glm::mat4> board_pos;
+    std::vector<glm::mat4> board_pos;
 };
 
 board createAndBindBoard();
 
 void drawBoard(const board &brd);
 
-std::vector<glm::mat4> make_grid(glm::mat4 base, glm::vec3 hTrans, glm::vec3 vTrans,  int x, int y);
+std::vector<glm::mat4> make_grid(glm::mat4 base, glm::vec3 hTrans,
+                                 glm::vec3 vTrans, int x, int y);
 
 class space_invaders {
-public:
+  public:
     std::shared_ptr<control> player;
     std::vector<control> aliens;
-    
 };
 
 control move_side(int distance);
 control move_vertical(int distance);
 control move(glm::vec2 dir);
 
-
-#endif //OPENGL_WITH_CONAN_BOARD_H
+#endif // OPENGL_WITH_CONAN_BOARD_H

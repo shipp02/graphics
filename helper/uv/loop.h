@@ -35,6 +35,7 @@ class loop
         uv_timer_start(timer, time_back<T>, 0, repeat);
         return timer;
     }
+    void run();
     private:
         uv_loop_t *t;
 };

@@ -7,32 +7,31 @@
 
 #include "bind_point.h"
 #include "program.h"
-#include <vector>
 #include <string>
+#include <vector>
 namespace gl {
-    class buffer : public std::enable_shared_from_this<buffer> {
-    public:
-        buffer();
-        buffer(std::vector<float> &points, std::vector<point_type> _types);
-        ~buffer();
+class buffer : public std::enable_shared_from_this<buffer> {
+  public:
+    buffer();
+    buffer(std::vector<float> &points, std::vector<point_type> _types);
+    ~buffer();
 
-        using ptr = std::shared_ptr<buffer>;
-        ptr with_bind_point(bind_point::ptr point);
+    using ptr = std::shared_ptr<buffer>;
+    ptr with_bind_point(bind_point::ptr point);
 
-        ptr with_bind_point(const program::ptr&  p, std::string name, std::vector<point_type> ps);
+    ptr with_bind_point(const program::ptr &p, std::string name,
+                        std::vector<point_type> ps);
 
-        ptr set_data(std::vector<float> &_points,
-                     std::vector<point_type> &_types);
+    ptr set_data(std::vector<float> &_points, std::vector<point_type> &_types);
 
-    private:
-        GLuint _buffer;
-        std::vector<float> points;
-        std::vector<point_type> types;
-        uint32_t assigned;
-        void save_to_gpu();
+  private:
+    GLuint _buffer;
+    std::vector<float> points;
+    std::vector<point_type> types;
+    uint32_t assigned;
+    void save_to_gpu();
+};
+buffer::ptr StandardBuffer(std::vector<float> &points);
+} // namespace gl
 
-    };
-  buffer::ptr StandardBuffer(std::vector<float> &points);
-}
-
-#endif //OPENGL_WITH_CONAN_BUFFER_H
+#endif // OPENGL_WITH_CONAN_BUFFER_H

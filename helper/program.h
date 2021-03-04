@@ -5,47 +5,48 @@
 #ifndef OPENGL_WITH_CONAN_PROGRAM_H
 #define OPENGL_WITH_CONAN_PROGRAM_H
 
-
-#include <memory>
-#include "shader.h"
-#include <map>
 #include "bind_point.h"
-#include <string>
+#include "shader.h"
 #include <GL/glew.h>
+#include <map>
+#include <memory>
+#include <string>
 
 namespace gl {
-    class program : public std::enable_shared_from_this<program> {
-        using error_handler = void (*)(int err, std::string describe);
-    public:
-        program(std::string vertexFile, std::string fragmentFile);
+class program : public std::enable_shared_from_this<program> {
+    using error_handler = void (*)(int err, std::string describe);
 
-        void attachShader(gl::shader &s) const;
+  public:
+    program(std::string vertexFile, std::string fragmentFile);
 
-        void on_error(error_handler &handler);
+    void attachShader(gl::shader &s) const;
 
-        GLuint attribLocation(std::string attr) const;
+    void on_error(error_handler &handler);
 
-        gl::bind_point::ptr attribBindPoint(std::string attr, std::vector<gl::point_type> ps);
+    GLuint attribLocation(std::string attr) const;
 
-        GLint matLocation(std::string name) const;
+    gl::bind_point::ptr attribBindPoint(std::string attr,
+                                        std::vector<gl::point_type> ps);
 
-        void use() const;
+    GLint matLocation(std::string name) const;
 
-        ~program();
+    void use() const;
 
-        GLuint get(); 
+    ~program();
 
-        std::map<std::string, gl::bind_point::ptr> binds;
-        using ptr = std::shared_ptr<program>;
+    GLuint get();
 
-    private:
-        gl::shader vShader;
-        gl::shader fShader;
-        GLuint _program;
-        int error{};
-        std::string err_describe;
-        error_handler err_func{};
-    };
-}
+    std::map<std::string, gl::bind_point::ptr> binds;
+    using ptr = std::shared_ptr<program>;
 
-#endif //OPENGL_WITH_CONAN_PROGRAM_H
+  private:
+    gl::shader vShader;
+    gl::shader fShader;
+    GLuint _program;
+    int error{};
+    std::string err_describe;
+    error_handler err_func{};
+};
+} // namespace gl
+
+#endif // OPENGL_WITH_CONAN_PROGRAM_H
