@@ -1,4 +1,3 @@
-
 #include "bind_point.h"
 #include "buffer.h"
 #include "context.cpp"
@@ -10,6 +9,7 @@
 #include <iostream>
 #include <memory>
 #include "GLFW/glfw3.h"
+#include "uv/loop.h"
 
 void err_handle(int num, std::string str) {
   std::cout<<"Error code:"<<num<<std::endl;
@@ -95,6 +95,15 @@ int main() {
     gl::printErrors("box matrixes.");
 
     auto last = glfwGetTime();
+    uv::loop l;
+    l.timer<glm::mat4> (
+            200,
+            [&](glm::mat4* m, uv_timer_t* /*e*/) {
+                    lightPos = lightPos + glm::vec3(0.1f, 0.1f, 0.0f);
+                    m = &glm::translate(*m, glm::vec3(0.1f, 0.1f, 0.0f));
+            },
+            &light_base
+    );
     while (!glfwWindowShouldClose(window)) {
         
         gl::backgroundColor(0.807, 0.823, 0.909, 1.0);
@@ -102,8 +111,8 @@ int main() {
         if (glfwGetTime() - last > 1) {
             last = glfwGetTime();
 //            rotate = glm::rotate(rotate, glm::radians(15.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-            lightPos = lightPos + glm::vec3(0.1f, 0.1f, 0.0f);
-            light_base = glm::translate(light_base, glm::vec3(0.1f, 0.1f, 0.0f));
+            //lightPos = lightPos + glm::vec3(0.1f, 0.1f, 0.0f);
+            // light_base = glm::translate(light_base, glm::vec3(0.1f, 0.1f, 0.0f));
         }
 
         box->use();

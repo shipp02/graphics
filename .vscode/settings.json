@@ -5,6 +5,7 @@
         "*.js": "javascript",
         "*.ts": "TypeScript",
         "iosfwd": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "memory": "cpp"
     }
 }
