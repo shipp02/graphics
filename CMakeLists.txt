@@ -13,7 +13,7 @@ set(LIB_SRC helper/program.cpp helper/program.h helper/shader.h helper/shader.cp
 include_directories(helper)
 include_directories(/usr/local/include)
 link_directories(/usr/local/lib)
-set(SRC one.cpp ${SRC} ${LIB_SRC})
+set(SRC one.cpp ${SRC} ${LIB_SRC} helper/vao.cpp helper/vao.h)
 file(COPY models DESTINATION ${CMAKE_BINARY_DIR})
 add_executable(conan1 ${SRC})
 target_link_libraries(conan1 ${CONAN_LIBS})
