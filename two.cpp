@@ -1,4 +1,3 @@
-#include "GLFW/glfw3.h"
 #include "bind_point.h"
 #include "buffer.h"
 #include "context.cpp"
@@ -10,11 +9,37 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 #include <memory>
+#include "GLFW/glfw3.h"
 
 void err_handle(int num, std::string str) {
     std::cout << "Error code:" << num << std::endl;
     std::cout << str << std::endl;
 }
+
+struct material {
+    glm::vec3 ambientVec;
+    glm::vec3 diffuseVec;
+    glm::vec3 specularVec;
+    float shiny;
+    int ambient;
+    int diffuse;
+    int specular;
+    int shinyP;
+};
+
+material make_material(std::shared_ptr<gl::program> program) {
+    return material{
+        .ambientVec = glm::vec3(0.5f, 0.5f, 0.31f),
+        .diffuseVec = glm::vec3(0.5f, 0.5f, 0.31f),
+        .specularVec = glm::vec3(0.5f, 0.5f, 0.5f),
+        .shiny = 32.0f,
+        .ambient =  program->matLocation("material.ambient"),
+        .diffuse =  program->matLocation( "material.diffuse"),
+        .specular = program->matLocation("material.specular"),
+        .shinyP = program->matLocation("material.shiny")
+    };
+}
+
 int main() {
     auto window = gl::mkWindowContextCurrent(800, 600);
     auto box = std::make_shared<gl::program>("shaders/lighting_ch1.vert",
@@ -32,9 +57,9 @@ int main() {
     gl::printErrors("box buffers");
 
     glm::mat4 base(1.0f);
-    base = glm::translate(base, glm::vec3(0.0f, 0.0f, 2.0f));
+    base = glm::translate(base, glm::vec3(0.0f, -0.7f, 3.0f));
     auto rotate =
-        glm::rotate(base, glm::radians(45.0f), glm::vec3(1.0f, 1.0f, 0.0f));
+        glm::rotate(base, glm::radians(45.0f), glm::vec3(1.0f, 0.2f, 0.0f));
     auto viewMatPos = box->matLocation("view");
     auto view =
         glm::lookAt(glm::vec3(0.0f, 0.0f, 4.0f), glm::vec3(0.0f, 0.0f, 0.0f),
@@ -52,16 +77,22 @@ int main() {
     gl::printErrors("box matrixes.");
 
     auto lightColor = glGetUniformLocation(box->get(), "lightColor");
-    glUniform3f(lightColor, 1.0f, 1.0, 1.0f);
+    glUniform3f(lightColor, 0.6f, 0.6f, 0.6f);
 
     auto lightPosLoc = glGetUniformLocation(box->get(), "lightPos");
 
-    auto Color = glGetUniformLocation(box->get(), "Color");
-    glUniform3f(Color, 1.0f, 0.5f, 0.5f);
+//    auto Color = glGetUniformLocation(box->get(), "Color");
+//    glUniform3f(Color, 1.0f, 0.5f, 0.31f);
 
     auto eyePos = glGetUniformLocation(box->get(), "viewPos");
     glUniform3fv(eyePos, 1, glm::value_ptr(glm::vec3(0.0f, 0.0f, 4.0f)));
-
+    gl::printErrors("before set all material matrices");
+    auto box_material = make_material(box);
+    glUniform3fv(box_material.ambient, 1, glm::value_ptr(box_material.ambientVec));
+    glUniform3fv(box_material.diffuse, 1, glm::value_ptr(box_material.diffuseVec));
+    glUniform3fv(box_material.specular, 1, glm::value_ptr(box_material.specularVec));
+    glUniform1f(box_material.shinyP, box_material.shiny);
+    gl::printErrors("set all material matrices");
     // Lights.
     auto light = std::make_shared<gl::program>("shaders/lights.vert",
                                                "shaders/lights.frag");
@@ -76,7 +107,7 @@ int main() {
     gl::printErrors("box buffers");
 
     glm::mat4 light_base(1.0f);
-    glm::vec3 lightPos(1.0f, 0.0f, 0.0f);
+    glm::vec3 lightPos(0.0f, 2.5f, 0.0f);
     light_base = glm::translate(light_base, lightPos);
     //    auto rotate_light =
     //            glm::rotate(base, 3.14f / 2, glm::vec3(1.0f, 0.0f, 1.0f));
@@ -119,9 +150,9 @@ int main() {
             //            rotate = glm::rotate(rotate,
             //            glm::radians(15.0f), glm::vec3(0.0f,
             //            0.0f, 1.0f));
-            // lightPos = lightPos + glm::vec3(0.1f, 0.1f, 0.0f);
-            // light_base = glm::translate(light_base, glm::vec3(0.1f,
-            // 0.1f, 0.0f));
+            lightPos = lightPos + glm::vec3(0.1f, 0.1f, 0.0f);
+            light_base = glm::translate(light_base, glm::vec3(0.1f,
+             0.1f, 0.0f));
         }
 
         box->use();
@@ -130,6 +161,10 @@ int main() {
          * glm::value_ptr(rotate)); */
         /* glUniform3f(lightColor, 1.0f, 1.0f, 1.0f); */
         glUniform3fv(lightPosLoc, 1, glm::value_ptr(lightPos));
+        glUniform3fv(box_material.ambient, 1, glm::value_ptr(box_material.ambientVec));
+        glUniform3fv(box_material.diffuse, 1, glm::value_ptr(box_material.diffuseVec));
+        glUniform3fv(box_material.specular, 1, glm::value_ptr(box_material.specularVec));
+        glUniform1f(box_material.shinyP, box_material.shiny);
         /* glUniform3fv(eyePos, 1, glm::value_ptr(glm::vec3(0.0f,
          * 0.0f, 4.0f))); */
         /* glUniform3f(Color, 1.0f, 0.5f, 0.5f); */
@@ -137,8 +172,8 @@ int main() {
 
         light->use();
         glBindVertexArray(light_vao);
-        /* glUniformMatrix4fv(light_modelMatPos, 1, GL_FALSE,
-         * glm::value_ptr(light_base)); */
+        glUniformMatrix4fv(light_modelMatPos, 1, GL_FALSE,
+         glm::value_ptr(light_base)); 
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
         glfwSwapBuffers(window);
