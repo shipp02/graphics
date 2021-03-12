@@ -9,7 +9,7 @@ include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
 set(LIB_SRC helper/program.cpp helper/program.h helper/shader.h helper/shader.cpp helper/buffer.h helper/buffer.cpp helper/bind_point.cpp helper/bind_point.h helper/texture.cpp helper/texture.h helper/utils.h helper/utils.cpp
-        helper/control.cpp helper/control.h helper/board.cpp helper/board.h helper/thread_pool.cpp helper/thread_pool.h helper/uv/loop.cpp helper/uv/loop.h)
+        helper/control.cpp helper/control.h helper/board.cpp helper/board.h helper/thread_pool.cpp helper/thread_pool.h helper/uv/loop.cpp helper/uv/loop.h helper/raw/wrappers.cpp helper/raw/wrappers.h)
 include_directories(helper)
 include_directories(/usr/local/include)
 link_directories(/usr/local/lib)
