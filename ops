@@ -1,0 +1,1 @@
+{"version":1,"ops":[{"type":1,"author":{"id":"c91567acfc59ebefee800e6528dc586ddf2a633a"},"timestamp":1615897109,"title":"Add better error checking to opengl code","message":"- Use exceptions in appropriate places to report.\n- This is combined with wrapping opengl api in ``gl::raw`` package.","files":null}]}
