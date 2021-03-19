@@ -54,7 +54,6 @@ int main() {
         return -1;
     }
 
-    std::cout<<"Program errored"<<std::endl;
     GLuint vao;
     gl::genAndBind(vao, glGenVertexArrays, glBindVertexArray);
     auto buf_box = std::make_shared<gl::buffer>(

@@ -13,6 +13,7 @@ void CheckShader(GLuint shader) {
 std::map<shaders, GLenum> shader_type_map{
     {shaders::FRAGMENT, GL_FRAGMENT_SHADER},
     {shaders::VERTEX, GL_VERTEX_SHADER}};
+
 GLuint CreateShader(shaders type) {
     return glCreateShader(shader_type_map[type]);
 }
@@ -33,7 +34,7 @@ void CompileShader(GLuint shader) {
         int len = GetShaderiv(shader, INFO_LOG_LEN);
         GLchar c[len];
         glGetShaderInfoLog(shader, len, NULL, c);
-        throw could_not_compile_shader(std::move(std::string(c)));
+        throw could_not_compile_shader(std::string(c));
     }
 }
 std::map<gl::raw::shader_info, GLenum> shader_info_map{

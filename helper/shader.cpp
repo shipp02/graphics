@@ -1,6 +1,7 @@
 #include "shader.h"
-#include "utils.h"
 #include "raw/wrappers.h"
+#include "utils.h"
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <cstdio>
 #include <fstream>
@@ -32,18 +33,22 @@ void error_printer(int err, std::string &describe) {
     cout << "Error description: " << describe << std::endl;
 }
 
-shader::shader(GLenum t, std::string sourceFile) {
-    using namespace gl::raw;
-    gl::printErrors("shader cons: " + sourceFile);
+shader::shader(gl::raw::shaders t, std::string sourceFile) {
+    gl::printErrors("shader cons" + sourceFile);
     type = t;
-    auto source = reader(sourceFile.c_str());
+    auto Ssource = reader(sourceFile.c_str());
+    auto source = Ssource.c_str();
+    if (source == "") {
+        err_describe += "Read error: \n" + sourceFile;
+    }
     // TODO:
     // Lines 48-58 and 88-98 can be refactored to function which
     // accepts a function to create shader/program
     // executes a given function on it with only argument of object
     // checks for errors
-    _shader = CreateShader(shaders::VERTEX);
-    ShaderSource(_shader, source);
+    using namespace gl::raw;
+    _shader = CreateShader(t);
+    ShaderSource(_shader, Ssource);
     CompileShader(_shader);
 }
 
@@ -54,7 +59,7 @@ void shader::on_error(error_handler handler) {
 }
 
 // No set so _shader is immutable
-uint64_t shader::get() const { return _shader; }
+GLuint shader::get() const { return _shader; }
 
 shader::~shader() { glDeleteShader(_shader); }
 

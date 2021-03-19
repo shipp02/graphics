@@ -11,13 +11,14 @@
 namespace gl {
 
 program::program(std::string vertexSource, std::string fragmentSource)
-    : vShader(GL_VERTEX_SHADER, std::move(vertexSource)),
-      fShader(GL_FRAGMENT_SHADER, std::move(fragmentSource)) {
+    : vShader(gl::raw::VERTEX, std::move(vertexSource)),
+      fShader(gl::raw::FRAGMENT, std::move(fragmentSource)) {
     using namespace gl::raw;
     _program = CreateProgram();
     attachShader(vShader);
     attachShader(fShader);
     LinkProgram(_program);
+    gl::printErrors("In program");
     // TODO:Better error handlng design
     glGetProgramiv(_program, GL_LINK_STATUS, &error);
     if (error != GL_TRUE) {
