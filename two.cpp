@@ -47,6 +47,14 @@ int main() {
                                              "shaders/lighting_ch1.frag");
     gl::printErrors("box program");
     box->use();
+    std::cout<<"Program created"<<std::endl;
+    /* box->attribBindPoint("Pos", std::vector<gl::point_type>{} ); */
+    if(glGetAttribLocation(box->get(), "Pos") == -1) {
+        std::cout<<"Program errored."<<std::endl;
+        return -1;
+    }
+
+    std::cout<<"Program errored"<<std::endl;
     GLuint vao;
     gl::genAndBind(vao, glGenVertexArrays, glBindVertexArray);
     auto buf_box = std::make_shared<gl::buffer>(
@@ -55,10 +63,11 @@ int main() {
                                                    gl::Green, gl::Blue})
                        ->with_bind_point(box, "Pos", gl::XYZ)
                        ->with_bind_point(box, "fNormal", gl::RGB);
+    std::cout<<"Here"<<std::endl;
     gl::printErrors("box buffers");
 
     glm::mat4 base(1.0f);
-    base = glm::translate(base, glm::vec3(0.0f, -0.7f, 3.0f));
+    base = glm::translate(base, glm::vec3(0.0f, -0.7f, 2.5f));
     auto rotate =
         glm::rotate(base, glm::radians(45.0f), glm::vec3(1.0f, 0.1f, 0.0f));
     auto viewMatPos = box->matLocation("view");
@@ -114,7 +123,7 @@ int main() {
     gl::printErrors("box buffers");
 
     glm::mat4 light_base(1.0f);
-    glm::vec3 lightPos(0.0f, 2.5f, 0.0f);
+    glm::vec3 lightPos(4.0f, 2.5f, -4.0f);
     light_base = glm::translate(light_base, lightPos);
     //    auto rotate_light =
     //            glm::rotate(base, 3.14f / 2, glm::vec3(1.0f, 0.0f, 1.0f));

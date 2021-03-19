@@ -19,18 +19,19 @@ class program : public std::enable_shared_from_this<program> {
   public:
     program(std::string vertexFile, std::string fragmentFile);
 
-    void attachShader(gl::shader &s) const;
+    void attachShader(gl::shader &s) ;
 
     void on_error(error_handler &handler);
 
-    GLuint attribLocation(std::string attr) const;
+    GLint attribLocation(std::string attr) ;
 
     gl::bind_point::ptr attribBindPoint(std::string attr,
                                         std::vector<gl::point_type> ps);
 
-    GLint matLocation(std::string name) const;
+    GLint matLocation(std::string name) ;
+    /* bind_point::ptr matLocation(std::string name); */
 
-    void use() const;
+    void use() ;
 
     ~program();
 

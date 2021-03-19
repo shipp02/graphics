@@ -16,7 +16,7 @@ class shader {
 
     void on_error(error_handler handler);
 
-    GLuint get() const;
+    uint64_t get() const;
 
     ~shader();
 

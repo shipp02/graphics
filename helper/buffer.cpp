@@ -25,7 +25,6 @@ void arrayBufferBind(GLuint arr) { glBindBuffer(GL_ARRAY_BUFFER, arr); }
 //  V
 //
 //};
-using std::shared_ptr;
 
 #define FLOAT_SIZE(x) x * sizeof(float)
 
@@ -51,7 +50,7 @@ buffer::ptr buffer::set_data(vector<float> &_points,
 
 class points_do_not_match {};
 
-// TODO: THis will bind the first few points on the bind_point with
+// TODO: This will bind the first few points on the bind_point with
 // with those on buffer provided their types match
 // Add check to prevent assignment of more than given number of points
 buffer::ptr buffer::with_bind_point(bind_point::ptr point) {
