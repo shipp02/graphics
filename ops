@@ -1,1 +1,1 @@
-{"version":1,"ops":[{"type":1,"author":{"id":"c91567acfc59ebefee800e6528dc586ddf2a633a"},"timestamp":1616216310,"title":"Using specular maps obscures the entire surface","message":"- Expected results the steel rims get brighter and wood does not reflect much\n- Actual results. The wood is completely invisible.\n\nOpened against commit 7d37fe","files":null}]}
+{"version":1,"ops":[{"type":3,"author":{"id":"c91567acfc59ebefee800e6528dc586ddf2a633a"},"timestamp":1616216636,"message":"Correction.\nOpened against ``7d3fe72``","files":null}]}
