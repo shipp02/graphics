@@ -2,7 +2,7 @@
 // Created by Aashay shah on 27/12/2020.
 //
 
-#include "bind_point.h"
+#include "gl/bind_point.h"
 
 #include <stdexcept>
 #include <utility>

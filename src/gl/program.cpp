@@ -2,10 +2,10 @@
 // Created by Aashay shah on 26/12/2020.
 //
 
-#include "program.h"
-#include "bind_point.h"
-#include "utils.h"
-#include "raw/wrappers.h"
+#include "gl/program.h"
+#include "gl/bind_point.h"
+#include "gl/utils.h"
+#include "gl/raw/wrappers.h"
 #include <iostream>
 
 namespace gl {

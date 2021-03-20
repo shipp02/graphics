@@ -2,7 +2,7 @@
 // Created by Aashay shah on 27/12/2020.
 //
 
-#include "utils.h"
+#include "gl/utils.h"
 #include <iostream>
 #include <vector>
 

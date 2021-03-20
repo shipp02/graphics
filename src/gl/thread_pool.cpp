@@ -2,7 +2,7 @@
 // Created by Aashay shah on 10/2/2021.
 //
 
-#include "thread_pool.h"
+#include "gl/thread_pool.h"
 
 // template<class F, class... Args>
 // auto thread_pool::enqueue(F f, Args &&... args) -> std::future<typename

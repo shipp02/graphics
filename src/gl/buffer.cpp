@@ -1,6 +1,6 @@
-#include "buffer.h"
-#include "bind_point.h"
-#include "utils.h"
+#include "gl/buffer.h"
+#include "gl/bind_point.h"
+#include "gl/utils.h"
 #include <GL/glew.h>
 #include <iostream>
 #include <memory>

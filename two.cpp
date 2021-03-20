@@ -1,11 +1,11 @@
-#include "bind_point.h"
-#include "buffer.h"
-#include "context.cpp"
+#include "gl/bind_point.h"
+#include "gl/buffer.h"
+#include "gl/context.h"
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/trigonometric.hpp"
-#include "program.h"
-#include "texture.h"
-#include "utils.h"
+#include "gl/program.h"
+#include "gl/texture.h"
+#include "gl/utils.h"
 #include "uv/loop.h"
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>

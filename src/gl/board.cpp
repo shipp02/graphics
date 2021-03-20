@@ -2,13 +2,13 @@
 // Created by Aashay shah on 7/2/2021.
 //
 
-#include "board.h"
-#include "bind_point.h"
-#include "buffer.h"
+#include "gl/board.h"
+#include "gl/bind_point.h"
+#include "gl/buffer.h"
 #include "glm/common.hpp"
 #include "glm/ext/matrix_transform.hpp"
-#include "program.h"
-#include "utils.h"
+#include "gl/program.h"
+#include "gl/utils.h"
 #include <memory>
 
 using std::vector;
