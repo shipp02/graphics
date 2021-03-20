@@ -4,6 +4,7 @@
 #include "glm/ext/matrix_transform.hpp"
 #include "glm/trigonometric.hpp"
 #include "program.h"
+#include "texture.h"
 #include "utils.h"
 #include "uv/loop.h"
 #include <glm/gtc/type_ptr.hpp>
@@ -35,7 +36,7 @@ material make_material(std::shared_ptr<gl::program> program) {
                     .diffuseVec = glm::vec3(1.0f, 0.5f, 0.31f),
                     .specularVec = glm::vec3(0.5f, 0.5f, 0.5f),
                     .shiny = 32.0f,
-                    .ambient = program->matLocation("material.ambient"),
+                    /* .ambient = program->matLocation("material.ambient"), */
                     .diffuse = program->matLocation("material.diffuse"),
                     .specular = program->matLocation("material.specular"),
                     .shinyP = program->matLocation("material.shiny")};
@@ -52,11 +53,13 @@ int main() {
     GLuint vao;
     gl::genAndBind(vao, glGenVertexArrays, glBindVertexArray);
     auto buf_box = std::make_shared<gl::buffer>(
-                       vertices::normal_cube,
-                       std::vector<gl::point_type>{gl::X, gl::Y, gl::Z, gl::Red,
-                                                   gl::Green, gl::Blue})
+                       vertices::textured_cube,
+                       std::vector<gl::point_type>{gl::X, gl::Y, gl::Z, 
+                                                   gl::Red, gl::Green, gl::Blue,
+                                                   gl::U, gl::V})
                        ->with_bind_point(box, "Pos", gl::XYZ)
-                       ->with_bind_point(box, "fNormal", gl::RGB);
+                       ->with_bind_point(box, "fNormal", gl::RGB)
+                       ->with_bind_point(box, "fTexCoords", gl::UV);
     std::cout<<"Here"<<std::endl;
     gl::printErrors("box buffers");
 
@@ -88,21 +91,31 @@ int main() {
     //    auto Color = glGetUniformLocation(box->get(), "Color");
     //    glUniform3f(Color, 1.0f, 0.5f, 0.31f);
 
+
+    // --------------- Textures -----------------//
+    // Create the texture for diffuse maps
+    const auto diff_tex = gl::texture("models/cube_diffuse_map.png");
+    gl::printErrors("after set texture");
+
+    const auto spec_tex = gl::texture("models/cube_specular_map.png", GL_TEXTURE1);
+
     auto eyePos = glGetUniformLocation(box->get(), "viewPos");
     glUniform3fv(eyePos, 1, glm::value_ptr(glm::vec3(0.0f, 0.0f, 4.0f)));
     gl::printErrors("before set all material matrices");
     auto box_material = make_material(box);
-    glUniform3fv(box_material.ambient, 1,
-                 glm::value_ptr(box_material.ambientVec));
-    glUniform3fv(box_material.diffuse, 1,
-                 glm::value_ptr(box_material.diffuseVec));
-    glUniform3fv(box_material.specular, 1,
-                 glm::value_ptr(box_material.specularVec));
+    glUniform1i(box_material.diffuse, 0);
+    /* glUniform3fv(box_material.diffuse, 1, */
+    /*              glm::value_ptr(box_material.diffuseVec)); */
+    glUniform1i(box_material.specular, 1);
     glUniform1f(box_material.shinyP, box_material.shiny);
     glSetUniformVec3(box, "light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
     glSetUniformVec3(box, "light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
     glSetUniformVec3(box, "light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
     gl::printErrors("set all material matrices");
+
+    //-----------------Lights------------------//
+    //
+    // Setting up the ligth shaders.
     // Lights.
     auto light = std::make_shared<gl::program>("shaders/lights.vert",
                                                "shaders/lights.frag");
@@ -171,13 +184,13 @@ int main() {
          * glm::value_ptr(rotate)); */
         /* glUniform3f(lightColor, 1.0f, 1.0f, 1.0f); */
         glUniform3fv(lightPosLoc, 1, glm::value_ptr(lightPos));
-        glUniform3fv(box_material.ambient, 1,
-                     glm::value_ptr(box_material.ambientVec));
-        glUniform3fv(box_material.diffuse, 1,
-                     glm::value_ptr(box_material.diffuseVec));
-        glUniform3fv(box_material.specular, 1,
-                     glm::value_ptr(box_material.specularVec));
-        glUniform1f(box_material.shinyP, box_material.shiny);
+        /* glUniform3fv(box_material.ambient, 1, */
+        /*              glm::value_ptr(box_material.ambientVec)); */
+        /* glUniform3fv(box_material.diffuse, 1, */
+        /*              glm::value_ptr(box_material.diffuseVec)); */
+        /* glUniform3fv(box_material.specular, 1, */
+        /*              glm::value_ptr(box_material.specularVec)); */
+        /* glUniform1f(box_material.shinyP, box_material.shiny); */
         /* glUniform3fv(eyePos, 1, glm::value_ptr(glm::vec3(0.0f,
          * 0.0f, 4.0f))); */
         /* glUniform3f(Color, 1.0f, 0.5f, 0.5f); */
