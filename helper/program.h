@@ -37,12 +37,24 @@ class program : public std::enable_shared_from_this<program> {
 
     GLuint get();
 
+    // Are copy semantics desirable here.
+    // If a copy gets deleted the program will also get deleted
+    // which will result in undesirable behavior.
+    // There will need to be a complete copy with
+    // new entire shader and program objects made with opengl.
+    program& operator= (const program &p);
+
+    program(const program& p);
+
     std::map<std::string, gl::bind_point::ptr> binds;
     using ptr = std::shared_ptr<program>;
 
   private:
+    // Use unique pointers to store gl::shaders
+    // so that they cannot be copied
     gl::shader vShader;
     gl::shader fShader;
+    // Use unique_ptr for this int to prevent copying
     GLuint _program;
     int error{};
     std::string err_describe;

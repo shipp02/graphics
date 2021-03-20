@@ -22,11 +22,16 @@ class shader {
 
     ~shader();
 
+    shader& operator= (const shader& s);
+    shader(const shader& s);
+    
+
   private:
     int error = 0;
-    std::string err_describe;
+    /* std::string err_describe; */
+    // Use std::unique_ptr to prevent copying.
     GLuint _shader;
-    GLenum type;
+    gl::raw::shaders type;
 };
 } // namespace gl
 #endif // OPENGL_WITH_CONAN_SHADER_H

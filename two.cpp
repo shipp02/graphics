@@ -48,11 +48,6 @@ int main() {
     gl::printErrors("box program");
     box->use();
     std::cout<<"Program created"<<std::endl;
-    /* box->attribBindPoint("Pos", std::vector<gl::point_type>{} ); */
-    if(glGetAttribLocation(box->get(), "Pos") == -1) {
-        std::cout<<"Program errored."<<std::endl;
-        return -1;
-    }
 
     GLuint vao;
     gl::genAndBind(vao, glGenVertexArrays, glBindVertexArray);

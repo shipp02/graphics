@@ -8,6 +8,7 @@
 #include <iostream>
 #include <memory>
 #include <sstream>
+#include <stdexcept>
 #include <string>
 
 using std::cout;
@@ -39,7 +40,8 @@ shader::shader(gl::raw::shaders t, std::string sourceFile) {
     auto Ssource = reader(sourceFile.c_str());
     auto source = Ssource.c_str();
     if (source == "") {
-        err_describe += "Read error: \n" + sourceFile;
+        /* err_describe += "Read error: \n" + sourceFile; */
+        throw std::runtime_error("Could not read file.");
     }
     // TODO:
     // Lines 48-58 and 88-98 can be refactored to function which
@@ -51,10 +53,22 @@ shader::shader(gl::raw::shaders t, std::string sourceFile) {
     ShaderSource(_shader, Ssource);
     CompileShader(_shader);
 }
+shader& shader::operator= (const shader& s) {
+    std::cout<<"shader Copy op"<<std::endl;
+    type = s.type;
+    _shader = s._shader;
+    return *this;
+}
+
+shader::shader(const shader& s) {
+    std::cout<<"shader Copy cons"<<std::endl;
+    type = s.type;
+    _shader = s._shader;
+}
 
 void shader::on_error(error_handler handler) {
     if (error != 0) {
-        handler(error, err_describe);
+        /* handler(error, err_describe); */
     }
 }
 

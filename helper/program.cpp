@@ -67,4 +67,17 @@ GLint program::matLocation(std::string name) {
 
 GLuint program::get() { return _program; }
 
+program& program::operator= (const program &p) {
+    std::cout<<"program Copy op"<<std::endl;
+    _program = p._program;
+    vShader = p.vShader;
+    fShader = p.fShader;
+    return *this;
+}
+
+program::program(const program& p) : vShader(p.vShader), fShader(p.fShader){
+    std::cout<<"program Copy cons"<<std::endl;
+    _program = p._program;
+}
+
 } // namespace gl
