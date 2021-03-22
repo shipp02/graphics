@@ -86,7 +86,7 @@ int main() {
     auto lightColor = glGetUniformLocation(box->get(), "lightColor");
     glUniform3f(lightColor, 1.0f, 1.0f, 1.0f);
 
-    auto lightPosLoc = glGetUniformLocation(box->get(), "lightPos");
+    auto lightPosLoc = glGetUniformLocation(box->get(), "light.Dir");
 
     //    auto Color = glGetUniformLocation(box->get(), "Color");
     //    glUniform3f(Color, 1.0f, 0.5f, 0.31f);
@@ -95,8 +95,6 @@ int main() {
     // --------------- Textures -----------------//
     // Create the texture for diffuse maps
     const auto diff_tex = gl::texture("models/cube_diffuse_map.png");
-    gl::printErrors("after set texture");
-
     const auto spec_tex = gl::texture("models/cube_specular_map.png", GL_TEXTURE1);
 
     auto eyePos = glGetUniformLocation(box->get(), "viewPos");
@@ -180,20 +178,7 @@ int main() {
 
         box->use();
         glBindVertexArray(vao);
-        /* glUniformMatrix4fv(modelMatPos, 1, GL_FALSE,
-         * glm::value_ptr(rotate)); */
-        /* glUniform3f(lightColor, 1.0f, 1.0f, 1.0f); */
-        glUniform3fv(lightPosLoc, 1, glm::value_ptr(lightPos));
-        /* glUniform3fv(box_material.ambient, 1, */
-        /*              glm::value_ptr(box_material.ambientVec)); */
-        /* glUniform3fv(box_material.diffuse, 1, */
-        /*              glm::value_ptr(box_material.diffuseVec)); */
-        /* glUniform3fv(box_material.specular, 1, */
-        /*              glm::value_ptr(box_material.specularVec)); */
-        /* glUniform1f(box_material.shinyP, box_material.shiny); */
-        /* glUniform3fv(eyePos, 1, glm::value_ptr(glm::vec3(0.0f,
-         * 0.0f, 4.0f))); */
-        /* glUniform3f(Color, 1.0f, 0.5f, 0.5f); */
+        glUniform3f(lightPosLoc, -0.0f, -1.0f, -1.0f );
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
         light->use();
