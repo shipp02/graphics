@@ -78,7 +78,7 @@ int main() {
 
     auto viewMatPos = box->matLocation("view");
     auto view =
-        glm::lookAt(glm::vec3(0.0f, 0.0f, 9.0f), glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::lookAt(glm::vec3(0.0f, 0.0f, 4.0f), glm::vec3(0.0f, 0.0f, 0.0f),
                     glm::vec3(0.0f, 1.0f, 0.0f));
     glUniformMatrix4fv(viewMatPos, 1, GL_FALSE, glm::value_ptr(view));
     gl::printErrors("box matrixes");
@@ -96,8 +96,8 @@ int main() {
     auto lightPosLoc = glGetUniformLocation(box->get(), "light.Pos");
 
     setFloat(box->get(), "light.constant", 1.0f);
-    setFloat(box->get(), "light.linear", 0.7f);
-    setFloat(box->get(), "light.quad", 1.8f);
+    setFloat(box->get(), "light.linear", 0.014f);
+    setFloat(box->get(), "light.quad", 0.007f);
     //    auto Color = glGetUniformLocation(box->get(), "Color");
     //    glUniform3f(Color, 1.0f, 0.5f, 0.31f);
 
@@ -134,11 +134,11 @@ int main() {
     GLuint light_vao;
     gl::genAndBind(light_vao, glGenVertexArrays, glBindVertexArray);
     auto buf_light = gl::StandardBuffer(vertices::cube)
-                         ->with_bind_point(box, "Pos", gl::XYZ);
+                         ->with_bind_point(light, "Pos", gl::XYZ);
     gl::printErrors("box buffers");
 
     glm::mat4 light_base(1.0f);
-    glm::vec3 lightPos(0.0f, 0.0f, 1.9f);
+    glm::vec3 lightPos(1.0f, 2.0f, 1.0f);
     light_base = glm::translate(light_base, lightPos);
     //    auto rotate_light =
     //            glm::rotate(base, 3.14f / 2, glm::vec3(1.0f, 0.0f, 1.0f));
@@ -191,8 +191,8 @@ int main() {
         gl::printErrors("Before light draw");
         light->use();
         glBindVertexArray(light_vao);
-        /* glUniformMatrix4fv(light_modelMatPos, 1, GL_FALSE, */
-        /*                    glm::value_ptr(light_base)); */
+        glUniformMatrix4fv(light_modelMatPos, 1, GL_FALSE,
+                           glm::value_ptr(light_base));
         glDrawArrays(GL_TRIANGLES, 0, 36);
         gl::printErrors("After light draw");
 
