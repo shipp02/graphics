@@ -17,7 +17,7 @@ void err_handle(int num, std::string str) {
     std::cout << str << std::endl;
 }
 
-void glSetUniformVec3(gl::program::ptr p, std::string name, glm::vec3 vector) {
+void SetUniformVec3(gl::program::ptr p, std::string name, glm::vec3 vector) {
     glUniform3fv(p->matLocation(name), 1, glm::value_ptr(vector));
 }
 struct material {
@@ -30,6 +30,10 @@ struct material {
     int specular;
     int shinyP;
 };
+
+void setFloat(uint prog, std::string s, float f) {
+    glUniform1f(glGetUniformLocation(prog, s.c_str()), f);
+}
 
 material make_material(std::shared_ptr<gl::program> program) {
     return material{.ambientVec = glm::vec3(1.0f, 0.5f, 0.31f),
@@ -66,7 +70,12 @@ int main() {
     glm::mat4 base(1.0f);
     base = glm::translate(base, glm::vec3(0.0f, -0.7f, 2.5f));
     auto rotate =
-        glm::rotate(base, glm::radians(45.0f), glm::vec3(1.0f, 0.1f, 0.0f));
+        glm::rotate(base, glm::radians(45.0f), glm::vec3(1.0f, 0.1f, 0.0f));    
+    auto modelMatPos = box->matLocation("model");
+    glUniformMatrix4fv(modelMatPos, 1, GL_FALSE, glm::value_ptr(rotate));
+    gl::printErrors("box matrixes.");
+    
+
     auto viewMatPos = box->matLocation("view");
     auto view =
         glm::lookAt(glm::vec3(0.0f, 0.0f, 4.0f), glm::vec3(0.0f, 0.0f, 0.0f),
@@ -79,36 +88,37 @@ int main() {
         glm::perspective(glm::radians(75.0f), 800 / (float)600, 0.1f, 10.0f);
     glUniformMatrix4fv(projMatPos, 1, GL_FALSE, glm::value_ptr(proj));
 
-    auto modelMatPos = box->matLocation("model");
-    glUniformMatrix4fv(modelMatPos, 1, GL_FALSE, glm::value_ptr(rotate));
-    gl::printErrors("box matrixes.");
+
 
     auto lightColor = glGetUniformLocation(box->get(), "lightColor");
     glUniform3f(lightColor, 1.0f, 1.0f, 1.0f);
 
-    auto lightPosLoc = glGetUniformLocation(box->get(), "light.Dir");
+    auto lightPosLoc = glGetUniformLocation(box->get(), "light.Pos");
 
+    setFloat(box->get(), "light.constant", 1.0f);
+    setFloat(box->get(), "light.linear", 0.7f);
+    setFloat(box->get(), "light.quad", 1.8f);
     //    auto Color = glGetUniformLocation(box->get(), "Color");
     //    glUniform3f(Color, 1.0f, 0.5f, 0.31f);
 
 
     // --------------- Textures -----------------//
     // Create the texture for diffuse maps
+    const auto box_material = make_material(box);
     const auto diff_tex = gl::texture("models/cube_diffuse_map.png");
-    const auto spec_tex = gl::texture("models/cube_specular_map.png", GL_TEXTURE1);
+    const auto spec_tex =
+        gl::texture("models/cube_specular_map.png", GL_TEXTURE1);
+    glUniform1i(box_material.diffuse, 0);
+    glUniform1i(box_material.specular, 1);    
 
     auto eyePos = glGetUniformLocation(box->get(), "viewPos");
     glUniform3fv(eyePos, 1, glm::value_ptr(glm::vec3(0.0f, 0.0f, 4.0f)));
     gl::printErrors("before set all material matrices");
-    auto box_material = make_material(box);
-    glUniform1i(box_material.diffuse, 0);
-    /* glUniform3fv(box_material.diffuse, 1, */
-    /*              glm::value_ptr(box_material.diffuseVec)); */
-    glUniform1i(box_material.specular, 1);
     glUniform1f(box_material.shinyP, box_material.shiny);
-    glSetUniformVec3(box, "light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
-    glSetUniformVec3(box, "light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
-    glSetUniformVec3(box, "light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
+
+    SetUniformVec3(box, "light.ambient", glm::vec3(0.2f, 0.2f, 0.2f));
+    SetUniformVec3(box, "light.diffuse", glm::vec3(0.5f, 0.5f, 0.5f));
+    SetUniformVec3(box, "light.specular", glm::vec3(1.0f, 1.0f, 1.0f));
     gl::printErrors("set all material matrices");
 
     //-----------------Lights------------------//
@@ -124,20 +134,17 @@ int main() {
     GLuint light_vao;
     gl::genAndBind(light_vao, glGenVertexArrays, glBindVertexArray);
     auto buf_light = gl::StandardBuffer(vertices::cube)
-                         ->with_bind_point(box, "Pos", gl::XYZ);
+                         ->with_bind_point(light, "Pos", gl::XYZ);
     gl::printErrors("box buffers");
 
     glm::mat4 light_base(1.0f);
-    glm::vec3 lightPos(4.0f, 2.5f, -4.0f);
+    glm::vec3 lightPos(0.0f, 0.0f, 0.0f);
     light_base = glm::translate(light_base, lightPos);
     //    auto rotate_light =
     //            glm::rotate(base, 3.14f / 2, glm::vec3(1.0f, 0.0f, 1.0f));
     //    rotate_light = glm::translate(rotate_light, glm::vec3(1.0f,
     //    0.0f, 1.5f));
     auto light_viewMatPos = light->matLocation("view");
-    auto light_view =
-        glm::lookAt(glm::vec3(0.0f, 0.0f, 8.0f), glm::vec3(0.0f, 0.0f, 0.0f),
-                    glm::vec3(0.0f, 1.0f, 0.0f));
     glUniformMatrix4fv(light_viewMatPos, 1, GL_FALSE, glm::value_ptr(view));
     gl::printErrors("box matrixes");
 
@@ -164,7 +171,7 @@ int main() {
     /* l.run(); */
     while (!glfwWindowShouldClose(window)) {
 
-        gl::backgroundColor(0.807, 0.823, 0.909, 1.0);
+        gl::backgroundColor(1.000f, 0.823f, 0.909f, 1.0);
 
         if (glfwGetTime() - last > 1) {
             last = glfwGetTime();
@@ -178,14 +185,16 @@ int main() {
 
         box->use();
         glBindVertexArray(vao);
-        glUniform3f(lightPosLoc, -0.0f, -1.0f, -1.0f );
+        glUniform3fv(lightPosLoc, 1, glm::value_ptr(lightPos) );
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
+        gl::printErrors("Before light draw");
         light->use();
         glBindVertexArray(light_vao);
-        glUniformMatrix4fv(light_modelMatPos, 1, GL_FALSE,
-                           glm::value_ptr(light_base));
+        /* glUniformMatrix4fv(light_modelMatPos, 1, GL_FALSE, */
+        /*                    glm::value_ptr(light_base)); */
         glDrawArrays(GL_TRIANGLES, 0, 36);
+        gl::printErrors("After light draw");
 
         glfwSwapBuffers(window);
         glfwPollEvents();
