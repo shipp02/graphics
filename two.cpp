@@ -160,14 +160,14 @@ int main() {
     uv::loop l;
     l.timer<glm::mat4>(
         200,
-        [](glm::mat4 *m, uv_timer_t * /*e*/) {
+        [](glm::mat4 &m, uv_timer_t * /*e*/) {
             /* lightPos = lightPos + glm::vec3(0.1f, 0.1f, 0.0f); */
-            auto old_x = *m;
-            auto x = glm::translate(*m, glm::vec3(0.1f, 0.1f, 0.0f));
+            m = glm::translate(m, glm::vec3(0.1f, 0.1f, 0.0f));
             std::cout << "Hey guys" << std::endl;
-            m = new glm::mat4(x);
+            /* m = new glm::mat4(x); */
         },
-        new glm::mat4(light_base));
+        std::make_unique<glm::mat4>(glm::mat4(light_base))
+    );
     /* l.run(); */
     while (!glfwWindowShouldClose(window)) {
 
