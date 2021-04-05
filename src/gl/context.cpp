@@ -1,8 +1,10 @@
 #ifndef HELPER_CONTEXT
 #define HELPER_CONTEXT
 
+#include "uv.h"
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include "gl/context.h"
 #include <fstream>
 #include <functional>
 #include <glm/glm.hpp>
@@ -11,7 +13,16 @@
 #include <stdio.h>
 
 namespace gl {
-GLFWwindow *mkWindowContextCurrent(unsigned int SCR_WIDTH,
+
+
+
+void window_idler_callback(uv_idle_t *t) {
+    if(glfwWindowShouldClose(static_cast<GLFWwindow*>(t->data))) {
+        uv_idle_stop(t);
+        uv_stop(t->loop);
+    }
+}
+Window mkWindowContextCurrent(unsigned int SCR_WIDTH,
                                    unsigned int SCR_HEIGHT) {
 
     if (glfwInit() != GL_TRUE) {
@@ -27,12 +38,22 @@ GLFWwindow *mkWindowContextCurrent(unsigned int SCR_WIDTH,
         glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL", NULL, NULL);
     glfwMakeContextCurrent(window);
 
+    uv_loop_init(uv_default_loop());
+    uv_idle_t idler;
+    uv_idle_init(uv_default_loop(), &idler);
+    uv_idle_start(&idler, window_idler_callback);
+    idler.data = window;
+
     // Init GLEW
     glewExperimental = GL_TRUE;
     if (glewInit() != GLEW_OK) {
         throw "Failed to initialize GLEW\n";
     }
-    return window;
+    return Window {
+        .window = window,
+        .loop = *uv_default_loop(),
+        .__idler = idler
+    };
 }
 
 void func_key_call(
