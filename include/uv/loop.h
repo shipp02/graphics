@@ -1,10 +1,12 @@
 #ifndef OPENGL_WITH_CONAN_UV_LOOP_H
 #define OPENGL_WITH_CONAN_UV_LOOP_H
 
+#include "uv.h"
 #include <iostream>
 #include <memory>
 #include <uv.h>
 #include<string>
+#include <vector>
 
 namespace uv
 {
@@ -13,6 +15,10 @@ template<typename T>
 class pin {
 public:
     pin(T pinned) : obj(new T(pinned)){
+        should_delete = false;
+        is_owner =  true;
+    }
+    pin(std::unique_ptr<T> pinned) : obj(new T(*pinned)){
         should_delete = false;
         is_owner =  true;
     }
@@ -73,16 +79,50 @@ private:
 };
 
 template<typename T>
-struct back_data {
-    std::function<void(T&, uv_timer_t*)> f;
-    pin<T> init;
-};
+struct back_data<T>;
 
 template<typename T>
 void time_back(uv_timer_t * t) {
     auto back = static_cast<back_data<T>*>(t->data);
-    back->f(*back->init, t);
+    auto stop = back->f(*back->init, t);
+    if(stop) {
+        uv_timer_stop(t);
+    }
 }
+
+template<typename T>
+class handle {
+public:
+    handle(uv_timer_t *t, pin<T> x) : data(std::move(x)) , h(t){
+    }
+
+    T& operator* () {
+        return *data;
+    }
+
+    void stop() {
+        std::cout<<"Stopped"<<std::endl;
+        auto back = static_cast<back_data<T>*>(h->data);
+        back->stop =  true;
+        /* uv_timer_stop(h); */
+        delete h;
+    }
+
+    uv_timer_t *h;
+
+private:
+    int times;
+    pin<T> data;
+
+};
+
+template<typename T>
+struct back_data {
+    // return true to stop the timer.
+    std::function<bool(handle<T>)> f;
+    pin<T> init;
+    bool stop;
+};
 
 class loop
 {
@@ -90,20 +130,24 @@ class loop
     loop();
     ~loop();
     template<typename T>
-    uv_timer_t* timer(uint64_t repeat, std::function<void(T&, uv_timer_t*)> func, std::unique_ptr<T> init) {
+    handle<T> timer(uint64_t repeat, std::function<void(T&, uv_timer_t*)> func, std::unique_ptr<T> init) {
         auto timer = new uv_timer_t;
         auto b_data = new back_data<T> {
             .f = func,
-            .init = pin<T>(std::move(init))
+            .init = pin<T>(std::move(init)),
+            .stop = false
         };
         timer-> data = static_cast<void*>(b_data);
         uv_timer_init(t, timer);
         uv_timer_start(timer, time_back<T>, 0, repeat);
-        return timer;
+        return handle<T>(timer, b_data->init);
     }
     void run();
+    void stop();
     private:
         uv_loop_t *t;
+        uv_idle_t *idler;
+        bool should_stop;
 };
 
 }; // namespace uv
