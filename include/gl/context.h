@@ -7,17 +7,30 @@
 
 #include "GLFW/glfw3.h"
 #include "uv.h"
+#include <stdexcept>
+#include <vector>
+
 namespace gl {
+
+struct key_events {
+    int events_remaining;
+    std::unique_ptr<std::vector<int>> event;
+};
 
 struct Window {
     GLFWwindow *window;
-    uv_loop_t loop;
-    uv_idle_t __idler;
+    uv_loop_t *loop;
+    uv_idle_t *_idler;
+    uv_async_t *key_events;
 };
 
+class gl_initialization_exception : public std::runtime_error {
+  public:
+    explicit gl_initialization_exception(std::string );
+};
 
-Window mkWindowContextCurrent(unsigned int SCR_WIDTH,
-                                   unsigned int SCR_HEIGHT); 
+Window mkWindowContextCurrent(int SCR_WIDTH,
+                                   int SCR_HEIGHT); 
 
 }
 

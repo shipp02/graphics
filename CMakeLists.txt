@@ -25,3 +25,7 @@ target_link_libraries(lighting ${CONAN_LIBS})
 target_link_libraries(lighting glpp)
 target_link_libraries(lighting uvpp)
 
+add_executable(event_loop three.cpp )
+target_link_libraries(event_loop ${CONAN_LIBS})
+target_link_libraries(event_loop glpp)
+target_link_libraries(event_loop uvpp)
