@@ -1,9 +1,6 @@
 #include "uv/loop.h"
-#include "glm/fwd.hpp"
 #include "uv.h"
-#include <functional>
 #include <memory>
-#include <stdint.h>
 #include <sys/types.h>
 #include <thread>
 
@@ -18,8 +15,8 @@ loop::loop()
     uv_idle_init(t, idler);
     idler->data = static_cast<void*>(&should_stop);
     uv_idle_start(idler, [](uv_idle_t *cb){
-        auto should_stop = static_cast<bool*>(cb->data);
-        if(*should_stop) {
+        auto s_stop = static_cast<bool*>(cb->data);
+        if(*s_stop) {
             uv_stop(cb->loop);
         }
     });
@@ -49,6 +46,6 @@ template class handle<uint>;
 /* template class handle<glm::mat4>; */
 /* template class handle<glm::vec3>; */
 template class handle<std::string>;
-template handle<int> loop::timer<int>(uint64_t, std::function<void(int&, uv_timer_t*)>, std::unique_ptr<int>);
-template handle<std::string> loop::timer<std::string>(uint64_t, std::function<void(std::string&, uv_timer_t*)>, std::unique_ptr<std::string>);
+template handle<int> loop::timer<int>(uint64_t, std::function<bool(int&, uv_timer_t*)>, std::unique_ptr<int>);
+template handle<std::string> loop::timer<std::string>(uint64_t, std::function<bool(std::string&, uv_timer_t*)>, std::unique_ptr<std::string>);
 } // namespace uv

@@ -14,11 +14,11 @@ namespace uv
 template<typename T>
 class pin {
 public:
-    pin(T pinned) : obj(new T(pinned)){
+    explicit pin(T pinned) : obj(new T(pinned)){
         should_delete = false;
         is_owner =  true;
     }
-    pin(std::unique_ptr<T> pinned) : obj(new T(*pinned)){
+    explicit pin(std::unique_ptr<T> pinned) : obj(new T(*pinned)){
         should_delete = false;
         is_owner =  true;
     }
@@ -48,7 +48,7 @@ public:
         should_delete = true;
     }
 
-    pin(pin && other) {
+    pin(pin && other)  noexcept {
         should_delete = other.should_delete;
         other.should_delete  = false;
         other.is_owner = false;
@@ -57,7 +57,7 @@ public:
         other.obj = nullptr;
     }
 
-    pin& operator= (pin && other) {
+    pin& operator= (pin && other)  noexcept {
         should_delete = other.should_delete;
         other.should_delete = false;
         other.is_owner = false;
@@ -79,7 +79,12 @@ private:
 };
 
 template<typename T>
-struct back_data<T>;
+struct back_data {
+    // return true to stop the timer.
+    std::function<bool(T&, uv_timer_t*)> f;
+    pin<T> init;
+    bool stop;
+};
 
 template<typename T>
 void time_back(uv_timer_t * t) {
@@ -89,6 +94,7 @@ void time_back(uv_timer_t * t) {
         uv_timer_stop(t);
     }
 }
+
 
 template<typename T>
 class handle {
@@ -116,13 +122,6 @@ private:
 
 };
 
-template<typename T>
-struct back_data {
-    // return true to stop the timer.
-    std::function<bool(handle<T>)> f;
-    pin<T> init;
-    bool stop;
-};
 
 class loop
 {
@@ -130,7 +129,7 @@ class loop
     loop();
     ~loop();
     template<typename T>
-    handle<T> timer(uint64_t repeat, std::function<void(T&, uv_timer_t*)> func, std::unique_ptr<T> init) {
+    handle<T> timer(uint64_t repeat, std::function<bool(T&, uv_timer_t*)> func, std::unique_ptr<T> init) {
         auto timer = new uv_timer_t;
         auto b_data = new back_data<T> {
             .f = func,
@@ -150,6 +149,6 @@ class loop
         bool should_stop;
 };
 
-}; // namespace uv
+} // namespace uv
 
 #endif

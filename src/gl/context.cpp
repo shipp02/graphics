@@ -13,7 +13,11 @@
 namespace gl {
 
 void window_idler_callback(uv_idle_t *t) {
-    if (glfwWindowShouldClose(static_cast<GLFWwindow *>(t->data))) {
+    if (glfwWindowShouldClose(glfwGetCurrentContext())) {
+        // GLFW closing hooks.
+        glfwDestroyWindow(glfwGetCurrentContext());
+        glfwTerminate();
+        // libuv closing hooks
         uv_idle_stop(t);
         uv_stop(t->loop);
     }
@@ -22,27 +26,22 @@ void window_idler_callback(uv_idle_t *t) {
 
 void uv_key_callback(uv_async_t *t) {
     auto *k =  static_cast<key_events*>(t->data);
-    while(k->events_remaining>=0) {
-        int event = k->event->at(k->events_remaining);
-        if(event == GLFW_KEY_Q) {
+    for(auto it = k->event->begin(); it!=k->event->end(); ++it) {
+        // For now all key callbacks will be handled by this function.
+        if(*it == GLFW_KEY_Q) {
             glfwSetWindowShouldClose(glfwGetCurrentContext(), GLFW_TRUE);
         }
-        std::cout<<"Recieved key event"<<std::endl;
-        k->event->assign(k->events_remaining, -1);
-        k->events_remaining--;
+        k->event->pop_front();
     }
 }
 
 void key_callback(GLFWwindow *win, int key, int, int action, int modifier) {
     auto* window = static_cast<Window*>(glfwGetWindowUserPointer(win));
     auto *k =  static_cast<key_events*>(window->key_events->data);
-    if(k->events_remaining >= 5) {
-        return;
-    }
-    k->event->assign(k->events_remaining, key);
+    // Consider sending all the data to the uv_key_callback
+    k->event->push_back(key);
     k->events_remaining++;
     uv_async_send(window->key_events);
-    std::cout<<"GLFW key event\n";
 }
 
 Window mkWindowContextCurrent(int SCR_WIDTH, int SCR_HEIGHT) {
@@ -62,13 +61,12 @@ Window mkWindowContextCurrent(int SCR_WIDTH, int SCR_HEIGHT) {
 
     uv_loop_init(uv_default_loop());
     uv_idle_t *idler = new uv_idle_t;
-    idler->data = window;
     uv_idle_init(uv_default_loop(), idler);
     uv_idle_start(idler, window_idler_callback);
     uv_async_t *key_async = new uv_async_t;
     key_async->data = new key_events {
         .events_remaining = 0,
-        .event = std::make_unique<std::vector<int>>(5)
+        .event = std::make_unique<std::deque<int>>()
     };
     uv_async_init(uv_default_loop(), key_async, uv_key_callback);
     glfwSetKeyCallback(window, key_callback);

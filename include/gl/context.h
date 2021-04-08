@@ -7,6 +7,7 @@
 
 #include "GLFW/glfw3.h"
 #include "uv.h"
+#include <deque>
 #include <stdexcept>
 #include <vector>
 
@@ -14,7 +15,7 @@ namespace gl {
 
 struct key_events {
     int events_remaining;
-    std::unique_ptr<std::vector<int>> event;
+    std::unique_ptr<std::deque<int>> event;
 };
 
 struct Window {
