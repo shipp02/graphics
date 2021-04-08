@@ -1,1 +1,1 @@
-{"version":1,"ops":[{"type":3,"author":{"id":"c91567acfc59ebefee800e6528dc586ddf2a633a"},"timestamp":1617810938,"message":"Added a idle event loop to glfw windows so that event loop keeps running. Also the event loops has hooks to destroy the window and stop the application when the signal is recieved.","files":null}]}
+{"version":1,"ops":[{"type":3,"author":{"id":"c91567acfc59ebefee800e6528dc586ddf2a633a"},"timestamp":1617855112,"message":"Stopped the crashing problem on key events with a deque.","files":null}]}
