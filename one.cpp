@@ -6,8 +6,7 @@
 #include "texture.h"
 #include "utils.h"
 #include "board.h"
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
+#include <gl/raw/opengl.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <iostream>

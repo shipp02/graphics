@@ -17,7 +17,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
-#include "GL/glew.h"
+#include <gl/raw/opengl.h>
 
 namespace gl {
 enum point_type { Red, Green, Blue, X, Y, Z, U, V };

@@ -1,7 +1,7 @@
 #include "gl/buffer.h"
 #include "gl/bind_point.h"
 #include "gl/utils.h"
-#include <GL/glew.h>
+#include <gl/raw/opengl.h>
 #include <iostream>
 #include <memory>
 #include <utility>

@@ -2,8 +2,7 @@
 #define HELPER_CONTEXT
 
 #include "uv.h"
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
+#include <gl/raw/opengl.h>
 #include "gl/context.h"
 #include <functional>
 #include <iostream>

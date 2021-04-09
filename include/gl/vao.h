@@ -11,7 +11,7 @@
 #define OPENGL_WITH_CONAN_VAO_H
 
 #include "buffer.h"
-#include <GL/glew.h>
+#include <gl/raw/opengl.h>
 #include <string>
 #include <vector>
 

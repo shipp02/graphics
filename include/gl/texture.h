@@ -5,7 +5,7 @@
 #ifndef OPENGL_WITH_CONAN_TEXTURE_H
 #define OPENGL_WITH_CONAN_TEXTURE_H
 
-#include "GL/glew.h"
+#include <gl/raw/opengl.h>
 #include <string>
 #include <vector>
 

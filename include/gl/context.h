@@ -5,7 +5,7 @@
 #ifndef OPENGL_WITH_CONAN_CONTEXT_H
 #define OPENGL_WITH_CONAN_CONTEXT_H
 
-#include "GLFW/glfw3.h"
+#include <gl/raw/opengl.h>
 #include "uv.h"
 #include <deque>
 #include <stdexcept>

@@ -1,8 +1,7 @@
 #include "gl/shader.h"
 #include "gl/raw/wrappers.h"
 #include "gl/utils.h"
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
+#include <gl/raw/opengl.h>
 #include <cstdio>
 #include <fstream>
 #include <iostream>

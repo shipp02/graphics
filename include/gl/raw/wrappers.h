@@ -1,7 +1,7 @@
 #ifndef OPENGL_WITH_CONAN_RAW_WRAPPER_H
 #define OPENGL_WITH_CONAN_RAW_WRAPPER_H
 
-#include "GL/glew.h"
+#include <gl/raw/opengl.h>
 #include <string>
 
 namespace gl::raw {

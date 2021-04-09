@@ -6,7 +6,7 @@
 #define OPENGL_WITH_CONAN_SHADER_H
 
 #include "raw/wrappers.h"
-#include <GL/glew.h>
+#include <gl/raw/opengl.h>
 #include <string>
 
 namespace gl {

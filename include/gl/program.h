@@ -7,7 +7,7 @@
 
 #include "bind_point.h"
 #include "shader.h"
-#include <GL/glew.h>
+#include <gl/raw/opengl.h>
 #include <map>
 #include <memory>
 #include <string>
