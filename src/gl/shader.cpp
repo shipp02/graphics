@@ -38,7 +38,7 @@ shader::shader(gl::raw::shaders t, std::string sourceFile) {
     type = t;
     auto Ssource = reader(sourceFile.c_str());
     auto source = Ssource.c_str();
-    if (source == "") {
+    if (Ssource.empty()) {
         /* err_describe += "Read error: \n" + sourceFile; */
         throw std::runtime_error("Could not read file.");
     }
